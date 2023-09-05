@@ -21,7 +21,7 @@ class Team(Enum):
     A=1
     B=2
 
-class Field(Enum):
+class Structure(Enum):
     PLANE=0
     POOL=1
     CASTLE=2
@@ -87,7 +87,7 @@ class Agent:
 class Cell:
     x=0
     y=0
-    field = Field(0)
+    structure = Structure(0)
     wall = Team(0)
     agent = Agent(Team.NONE, 0, 0)
     nextAgent = Team(0)
@@ -97,9 +97,9 @@ class Cell:
         self.x = x
         self.y = y
         if ID == "1":
-            self.field = Field(1)
+            self.structure = Structure(1)
         elif ID == "2":
-            self.field = Field(2)
+            self.structure = Structure(2)
         elif ID == "a":
             self.agent = Agent(Team.A, x ,y)
         elif ID == "b":
@@ -107,7 +107,7 @@ class Cell:
 
     #上に乗ることが出来るか
     def CanEnter(self, team):
-        if self.field == Field.POOL:
+        if self.structure == Structure.POOL:
             return False
         if (team == Team.A)&(self.wall == Team.B):
             return False
@@ -119,7 +119,7 @@ class Cell:
     
     #上に城壁を設置出来るか
     def CanPlace(self, team):
-        if self.field == Field.CASTLE:
+        if self.structure == Structure.CASTLE:
             return False
         if self.wall != Team.NONE:
             return False
@@ -130,10 +130,10 @@ class Cell:
         return True
     
     #対応する色を返す(グラフ描画用)
-    def GetFieldColor(self):
-        if self.field == Field.POOL:
+    def GetStructureColor(self):
+        if self.structure == Structure.POOL:
             return "lightgreen"
-        elif self.field == Field.CASTLE:
+        elif self.structure == Structure.CASTLE:
             return "gray"
         else:
             return "white"
@@ -201,7 +201,7 @@ while(1):
     plt.cla
     for x in range(0, Size):
         for y in range(0, Size):
-            plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetFieldColor())
+            plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
             if Cells[x][y].GetWallColor() != "clear":
                 plt.plot(x, y, marker='s', markersize=15, c=Cells[x][y].GetWallColor())
             if Cells[x][y].GetAgentColor() != "clear":
