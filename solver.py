@@ -39,9 +39,10 @@ class Mason:
     
     #毎ターンの行動
     def Act(self):
-        if Cells[self.x + 1][self.y].CanPlace:
+        if Cells[self.x + 1][self.y].CanPlace(self.team):
             self.Place(1, 0)
-        self.Move(0, 1)
+        else:
+            self.Move(0, 1)
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
