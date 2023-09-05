@@ -26,7 +26,7 @@ class Structure(Enum):
     POOL=1
     CASTLE=2
 
-class Agent:
+class Mason:
     x=0
     y=0
     team = Team(0)
@@ -89,8 +89,8 @@ class Cell:
     y=0
     structure = Structure(0)
     wall = Team(0)
-    agent = Agent(Team.NONE, 0, 0)
-    nextAgent = Team(0)
+    mason = Mason(Team.NONE, 0, 0)
+    nextMason = Team(0)
 
     #初期化。ここ以外でIDは用いない
     def __init__(self, x, y, ID):
@@ -101,9 +101,9 @@ class Cell:
         elif ID == "2":
             self.structure = Structure(2)
         elif ID == "a":
-            self.agent = Agent(Team.A, x ,y)
+            self.mason = Mason(Team.A, x ,y)
         elif ID == "b":
-            self.agent = Agent(Team.B, x, y)
+            self.mason = Mason(Team.B, x, y)
 
     #上に乗ることが出来るか
     def CanEnter(self, team):
@@ -113,7 +113,7 @@ class Cell:
             return False
         if (team == Team.B)&(self.wall == Team.A):
             return False
-        if self.agent.team != Team.NONE:
+        if self.mason.team != Team.NONE:
             return False
         return True
     
@@ -123,9 +123,9 @@ class Cell:
             return False
         if self.wall != Team.NONE:
             return False
-        if (team == Team.A)&(self.agent.team == Team.B):
+        if (team == Team.A)&(self.mason.team == Team.B):
             return False
-        if (team == Team.B)&(self.agent.team == Team.A):
+        if (team == Team.B)&(self.mason.team == Team.A):
             return False
         return True
     
@@ -144,26 +144,26 @@ class Cell:
             return "lightblue"
         else:
             return "clear"
-    def GetAgentColor(self):
-        if self.agent.team == Team.A:
+    def GetMasonColor(self):
+        if self.mason.team == Team.A:
             return "red"
-        elif self.agent.team == Team.B:
+        elif self.mason.team == Team.B:
             return "blue"
         else:
             return "clear"
     
     #毎ターン実行される
     def Act(self):
-        if self.agent.team == Team.NONE:
+        if self.mason.team == Team.NONE:
             return
-        self.agent.Act()
+        self.mason.Act()
 
     #Actのfor文が一旦終わった後実行される
     def LateAct(self):
-        if self.nextAgent == Team.NONE:
+        if self.nextMason == Team.NONE:
             return
-        self.agent = Agent(self.nextAgent, self.x, self.y)
-        self.nextAgent = Team(0)
+        self.mason = Mason(self.nextMason, self.x, self.y)
+        self.nextMason = Team(0)
 
     #自身に城壁設置
     def Place(self, team):
@@ -175,11 +175,11 @@ class Cell:
 
     #職人が入ってくる
     def Enter(self, team):
-        self.nextAgent = team
+        self.nextMason = team
 
     #職人が出ていく
     def Exit(self):
-        self.agent = Agent(Team.NONE, 0, 0)
+        self.mason = Mason(Team.NONE, 0, 0)
 
 #CSVからマップ読み込み
 Cells = []
@@ -204,8 +204,8 @@ while(1):
             plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
             if Cells[x][y].GetWallColor() != "clear":
                 plt.plot(x, y, marker='s', markersize=15, c=Cells[x][y].GetWallColor())
-            if Cells[x][y].GetAgentColor() != "clear":
-                plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetAgentColor())
+            if Cells[x][y].GetMasonColor() != "clear":
+                plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
     plt.show()
     for x in range(0, Size):
