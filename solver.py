@@ -184,6 +184,21 @@ class Cell:
     def Exit(self):
         self.mason = Mason(Team.NONE, 0, 0)
 
+def CopyCells():
+    copied = []
+    for x in range(0, Size):
+        subCopied = []
+        for y in range(0, Size):
+            cellCopied = Cell
+            cellCopied.x=x
+            cellCopied.y=y
+            cellCopied.structure = Cells[x][y].structure
+            cellCopied.wall = Cells[x][y].wall
+            cellCopied.mason = Mason(Cells[x][y].mason.team, x, y)
+            subCopied.append(cellCopied)
+        copied.append(subCopied)
+    return copied
+
 #CSVからマップ読み込み
 Cells = []
 Size = 0
