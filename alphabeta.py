@@ -7,6 +7,7 @@ import networkx as nx
 from queue import Queue
 import sys
 import math
+import copy
 
 import solver
 #Cells,Size,CurrentTurn,TeamMasonCount
@@ -68,7 +69,7 @@ def wall_dfs(t,G):
                 if t==1 and i==7:
                     point.append([x,y]) 
                 else:
-                    temp.append([x,y])       
+                    temp.append([x,y])
         if not stack:
             count.append(point)
             cent.append(temp)
@@ -82,13 +83,59 @@ def wall_dfs(t,G):
             u+=1
     return count, cent #三次元
         
+def wallbreak(game,x,y,mason):
+    a,b=wall_dfs(mason.team,game)
+    for i in range(len(b)):
+        if [x,y] in b[i]:
+            break
+    else:
+        return -float('inf')
+    for i in range(len(a)):
+        if [x,y] in a[i]:
+            break
+    else:
+        return -float('inf')
+    area = areacalc()
+    return area
+    
+def wallbuild(game,x,y,mason):
+    visited=[[0 for i in range(G.horizontal)]for j in range(G.vertical)]##訪れたかどうか
+    visited[x][y]=1
+    point=[]
+    temp=[]
+    stack=[x,y]
+    while stack:
+        x,y=stack.pop()
+        t=0
+        for i in range(8):
+            wx,wy=x+dx_dy[i][0],y+dx_dy[i][1]
+            if 0 <= wx < G.vertical and 0 <= wy < G.horizontal and np.all(visited[wx][wy] == 0) and (np.all(G.field[wx][wy].wall==k)):
+                visited[wx][wy]=1
+                stack.append([wx,wy])
+            if 0 <= wx < G.vertical and 0 <= wy < G.horizontal and np.all(G.field[wx][wy].wall==k):
+                t=t+1
+            if t==1 and i==7:
+                point.append([x,y]) 
+            else:
+                temp.append([x,y])
 
-def temporary_evaluator(Game,cond,area):
+
+move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
+def temporary_evaluator(Game,cond,mason):
+
     evaluation=0
     moving=1
     building=1
     breaking=1
-    
+    area = areacalc()
+    if -1<cond<8:
+        move[cond]
+
+    if 7<cond<12:
+        move[cond-8]
+    if 11<cond<16:
+        evaluation += wallbreak()*breaking
+
     return evaluation
     
 def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason): 
@@ -96,14 +143,12 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason):
     for k in range(num_per):
         if(movement<depth):
             t=Game.context(movement)
-            G_temp=Game
-            mason.Act
-            max=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per,mason)
             best_move=0
-            for i in range(15):
-                G_temp=Game
-                
-                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per,mason)
+            for i in range(16):
+                best_move=i
+                G_temp=copy.deepcopy(Game)
+                mason.Act()#####################
+                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per, mason)
                 if t==1:
                     if (temp>=beta):
                         return temp
@@ -117,7 +162,7 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason):
                         best_move=i
                         beta=temp
         elif depth==movement:
-            return temporary_evaluator(Game, best_move)
+            return temporary_evaluator(Game, best_move,mason)
         if t==1:
             best_move_arr.append(best_move)
             return alpha
