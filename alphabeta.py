@@ -34,7 +34,7 @@ class Game:
         else:
             return -1
         
-        
+dx_dy=[[1,0],[0,1],[-1,0],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
 #kが1味方-1敵            
 #城壁の端を探索
 def wall_dfs(t,G):
@@ -45,7 +45,6 @@ def wall_dfs(t,G):
     u=0
     temp=[]
     cent=[]
-    dx_dy=[[1,0],[0,1],[-1,0],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
     p=G.boardcheck(k)
     kx,ky=p[0]##城壁の端
     length=len(p)
@@ -118,6 +117,7 @@ def wallbuild(game,x,y,mason):
                 point.append([x,y]) 
             else:
                 temp.append([x,y])
+    mason
 
 
 move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
