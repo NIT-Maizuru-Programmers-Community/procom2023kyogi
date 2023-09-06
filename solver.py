@@ -9,7 +9,7 @@ def Normalize(n):
     return max(-1, min(n, 1))
 
 #マップ範囲外ならTrue
-def IsOutOfSize(x, y):    
+def IsOutOfSize(x, y):
     if (x < 0)|(Size <= x):
         return True
     if (y < 0)|(Size <= y):
@@ -39,7 +39,10 @@ class Mason:
     
     #毎ターンの行動
     def Act(self):
-        self.Move(-1,0)
+        if Cells[self.x + 1][self.y].CanPlace(self.team):
+            self.Place(1, 0)
+        else:
+            self.Move(0, 1)
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
@@ -90,7 +93,7 @@ class Cell:
     structure = Structure(0)
     wall = Team(0)
     mason = Mason(Team.NONE, 0, 0)
-    nextMason = Team(0)
+    __nextMason = Team(0)
 
     #初期化。ここ以外でIDは用いない
     def __init__(self, x, y, ID):
@@ -160,10 +163,10 @@ class Cell:
 
     #Actのfor文が一旦終わった後実行される
     def LateAct(self):
-        if self.nextMason == Team.NONE:
+        if self.__nextMason == Team.NONE:
             return
-        self.mason = Mason(self.nextMason, self.x, self.y)
-        self.nextMason = Team(0)
+        self.mason = Mason(self.__nextMason, self.x, self.y)
+        self.__nextMason = Team(0)
 
     #自身に城壁設置
     def Place(self, team):
@@ -175,7 +178,7 @@ class Cell:
 
     #職人が入ってくる
     def Enter(self, team):
-        self.nextMason = team
+        self.__nextMason = team
 
     #職人が出ていく
     def Exit(self):
@@ -185,6 +188,7 @@ class Cell:
 Cells = []
 Size = 0
 CurrentTurn = 0
+TeamMasonCount = 0
 with open('A11.csv') as f:
     reader = csv.reader(f)
     l = [row for row in reader]
@@ -193,6 +197,8 @@ with open('A11.csv') as f:
         subCells = []
         for y in range(0, Size):
             cell = Cell(x,y,l[x][y])
+            if cell.mason.team == Team.A:
+                TeamMasonCount += 1
             subCells.append(cell)
         Cells.append(subCells)
 #pyplotの画面を閉じる度に実行
