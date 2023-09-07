@@ -41,7 +41,7 @@ dx_dy=[[1,0],[0,1],[-1,0],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
 def wall_dfs(t,G):
     if t==1:
         k=1
-    if t==-1:
+    if t==2:
         k=2
     u=0
     temp=[]
@@ -99,6 +99,10 @@ def wallbreak(game,x,y,mason):
     return area
     
 def wallbuild(game,x,y,mason):
+    if mason.team==Team.A:
+        k=Team.A
+    else:
+        k=Team.B
     visited=[[0 for i in range(G.horizontal)]for j in range(G.vertical)]##訪れたかどうか
     visited[x][y]=1
     point=[]
@@ -120,22 +124,42 @@ def wallbuild(game,x,y,mason):
                 temp.append([x,y])
     mason
 
+castle_xy=[[2,0],[2,1],[2,2],[2,-1],[2,-2],[1,2],[1,-2],[0,2],[0,-2],[-1,2],[-1,-2],[-2,0],[-2,1],[-2,2],[-2,-1],[-2,-2]]
+def castle(x,y,game):
+    for i in range(8):
+        if game.field[x+dx_dy[i][0]][y+dx_dy[i][1]].structure==solver.Structure.CASTLE:
+            return True
+    for j in range(16):
+        if game.field[x+castle_xy[j][0]][y+castle_xy[j][1]].structure==solver.Structure.CASTLE:
+            return True
+    return False
+
 
 move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
+
 def temporary_evaluator(Game,cond,mason):
 
     evaluation=0
     moving=1
     building=1
     breaking=1
+    castlepoint =1
     area = calcArea.calcarea()
     if -1<cond<8:
-        move[cond]
+        if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanEnter(mason.team):
+            return -float('inf')
+        move[cond]        
 
     if 7<cond<12:
-        move[cond-8]
+        point = 100
+        if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanPlace(mason.team):
+            return -float('inf')
+        if castle(move[cond-8][0],move[cond-8][1],Game):
+            point += castlepoint
+
     if 11<cond<16:
-        if solver.
+        if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].Canbreak(mason.team):
+            return -float('inf')
         evaluation += wallbreak()*breaking
 
     evaluation+=area
