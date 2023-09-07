@@ -44,34 +44,34 @@ class Wall:
             plt.plot(edge1[0], edge1[1], marker='s', markersize=20, c="green")
             plt.plot(edge2[0], edge2[1], marker='s', markersize=20, c="yellow")
             for wallPos in self.wall():
-                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=15, c="gray")
+                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=16, c="gray")
             #補完線を計算
             if diff[0] > diff[1]:
-                fixedWall1 = []#self.wall().copy()
+                fixedWall1 = self.wall().copy()
                 for wallPos in range(pos1[0], edge1[0], 1 if pos1[0]<edge1[0] else -1):
                     fixedWall1.append([wallPos,pos1[1]])
                 for wallPosX, wallPosY in zip(range(edge1[0], pos2[0], 1 if edge1[0]<pos2[0] else -1),range(edge1[1], pos2[1], 1 if edge1[0]<pos2[0] else -1)):
                     fixedWall1.append([wallPosX,wallPosY])
-                fixedWall2 = []#self.wall().copy()
+                fixedWall2 = self.wall().copy()
                 for wallPos in range(pos2[0], edge2[0], 1 if pos2[0]<edge2[0] else -1):
                     fixedWall2.append([wallPos,pos2[1]])
                 for wallPosX, wallPosY in zip(range(edge2[0], pos1[0], 1 if edge2[0]<pos1[0] else -1),range(edge2[1], pos1[1], 1 if edge2[0]<pos1[0] else -1)):
                     fixedWall2.append([wallPosX,wallPosY])
             else:
-                fixedWall1 = []#self.wall().copy()
+                fixedWall1 = self.wall().copy()
                 for wallPos in range(pos1[1], edge1[1], 1 if pos1[1]<edge1[1] else -1):
                     fixedWall1.append([pos1[0],wallPos])
                 for wallPosX, wallPosY in zip(range(edge1[0], pos2[0], 1 if edge1[0]<pos2[0] else -1),range(edge1[1], pos2[1], 1 if edge1[1]<pos2[1] else -1)):
                     fixedWall1.append([wallPosX,wallPosY])
-                fixedWall2 = []#self.wall().copy()
+                fixedWall2 = self.wall().copy()
                 for wallPos in range(pos2[1], edge2[1], 1 if pos2[1]<edge2[1] else -1):
                     fixedWall2.append([pos2[0],wallPos])
                 for wallPosX, wallPosY in zip(range(edge2[0], pos1[0], 1 if edge2[0]<pos1[0] else -1),range(edge2[1], pos1[1], 1 if edge2[1]<pos1[1] else -1)):
                     fixedWall2.append([wallPosX,wallPosY])
             for wallPos in fixedWall1:
-                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=10, c="lightgreen")
+                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=12, c="cyan")
             for wallPos in fixedWall2:
-                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=10, c="lightyellow")
+                plt.plot(wallPos[0], wallPos[1], marker='s', markersize=8, c="magenta")
             #補完線をグラフに描画
             plt.axis('square')
             plt.xlim(0,10)
