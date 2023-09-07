@@ -10,6 +10,8 @@ wall2 = [[10,8],[9,8],[8,8],[7,8],[7,9]]
 Terminals = [terminal1,terminal2]
 Walls = [wall1, wall2]
 
+Size = 11
+
 class Wall:
     id=0
     def __init__(self, id):
@@ -72,6 +74,38 @@ class Wall:
                 plt.plot(wallPos[0], wallPos[1], marker='s', markersize=12, c="cyan")
             for wallPos in fixedWall2:
                 plt.plot(wallPos[0], wallPos[1], marker='s', markersize=8, c="magenta")
+            #面積を算出
+            area1 = 0
+            area2 = 0
+            for x in range(0,Size,1):
+                flag1 = False
+                flag2 = False
+                subArea1 = 0
+                subArea2 = 0
+                for y in range(0,Size,1):
+                    if [x,y] in fixedWall1:
+                        if flag1 == False:
+                            flag1 = True
+                        else:
+                            flag1 = False
+                            area1 += subArea1
+                            subArea1 = 0
+                    elif flag1 == True:
+                        subArea1 += 1
+                    if [x,y] in fixedWall2:
+                        if flag2 == False:
+                            flag2 = True
+                        else:
+                            flag2 = False
+                            area2 += subArea2
+                            subArea2 = 0
+                    elif flag2 == True:
+                        subArea2 += 1
+                flag1 = False
+                flag2 = False
+                subArea1 = 0
+                subArea2 = 0
+            print(area1, area2)
             #補完線をグラフに描画
             plt.axis('square')
             plt.xlim(0,10)
