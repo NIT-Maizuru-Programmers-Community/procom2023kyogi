@@ -132,6 +132,14 @@ class Cell:
             return False
         return True
     
+    #破壊できるか
+    def CanBreak(self, team):
+        if (team == Team.A)&(self.wall == Team.B):
+            return True
+        if (team == Team.B)&(self.wall == Team.A):
+            return True
+        return False
+
     #対応する色を返す(グラフ描画用)
     def GetStructureColor(self):
         if self.structure == Structure.POOL:
