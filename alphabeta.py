@@ -10,6 +10,7 @@ import math
 import copy
 
 import solver
+import calcArea
 #Cells,Size,CurrentTurn,TeamMasonCount
 
 class Game:
@@ -24,7 +25,7 @@ class Game:
         p=[]
         for i in range(vertical):
             for j in range(horizontal):
-                if self.field[i][j].wall==Team.A:
+                if self.field[i][j].wall==s:
                     p.append([i,j])
         return p    
     
@@ -127,15 +128,17 @@ def temporary_evaluator(Game,cond,mason):
     moving=1
     building=1
     breaking=1
-    area = areacalc()
+    area = calcArea.calcarea()
     if -1<cond<8:
         move[cond]
 
     if 7<cond<12:
         move[cond-8]
     if 11<cond<16:
+        if solver.
         evaluation += wallbreak()*breaking
 
+    evaluation+=area
     return evaluation
     
 def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason): 
