@@ -187,21 +187,20 @@ def wallbuild(game,x,y,mason):
     if not twentyfourcheck(x,y,game,k):
         return 0
     else:
-        c=twentyfourcheck(x,y,game,k)
+        c,d=twentyfourcheck(x,y,game,k)
         a,b=wall_dfs(mason.team,game)
         for i in range(len(b)):
-            if [x,y] in b[i]:
+            if [c,d] in b[i]:
                 p=i
                 break
         else:
             for i in range(len(a)):
-                if [x,y] in a[i]:
+                if [c,d] in a[i]:
                     p=i
                     break
             else:
                 return -float('inf')
-
-        areacalc(a,b,game.horizontal)
+    return areacalc(a[p],b[p],game.horizontal)
 
 
 castle_xy=[[2,0],[2,1],[2,2],[2,-1],[2,-2],[1,2],[1,-2],[0,2],[0,-2],[-1,2],[-1,-2],[-2,0],[-2,1],[-2,2],[-2,-1],[-2,-2]]
@@ -235,6 +234,7 @@ def temporary_evaluator(Game,cond,mason):
             return -float('inf')
         if twentyfourcheck(move[cond-8][0],move[cond-8][1],Game,2):
             point += castlepoint
+        point += wallbuild(Game,mason.x+move[cond][0],mason.y+move[cond][1],mason)*building
 
     if 11<cond<16:
         if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].Canbreak(mason.team):
