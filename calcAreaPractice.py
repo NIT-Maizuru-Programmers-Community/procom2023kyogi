@@ -19,6 +19,7 @@ class Wall:
     def terminal(self):
         return Terminals[self.id]
     def area(self):
+        areas = []
         #壁の端2つの全組み合わせで試行
         for pos in itertools.combinations(self.terminal(), 2):
             #補完線の折れ曲がる座標を計算
@@ -93,7 +94,9 @@ class Wall:
                 flag2 = False
                 subArea1 = 0
                 subArea2 = 0
-            return max(area1, area2)
+            areas.append(max(area1, area2))
+        return areas
 
 CalcWall = Wall(0)
-CalcWall.area()
+for area in CalcWall.area():
+    print(area)
