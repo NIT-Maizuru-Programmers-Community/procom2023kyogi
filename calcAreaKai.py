@@ -90,27 +90,29 @@ class Wall:
                         self.wall = wall
 
                     def CanRegist(self):
-                        #print((self.chunkID == 0)&(self.wall == False))
                         return (self.chunkID == 0)&(self.wall == False)
 
                     def Regist(self, ID, nextCells):
                         self.chunkID = ID
-                        #print(self.x,self.y)
                         if (self.x - 1 >= 0):
                             if (checkerCell[self.x - 1][self.y].CanRegist()):
-                                #print("x - 1")
+                                if [self.x - 1, self.y] in nextCells:
+                                    return
                                 nextCells.append([self.x - 1, self.y])
                         if (self.x + 1 < Size):
                             if (checkerCell[self.x + 1][self.y].CanRegist()):
-                                #print("x + 1")
+                                if [self.x + 1, self.y] in nextCells:
+                                    return
                                 nextCells.append([self.x + 1, self.y])
                         if (self.y - 1 >= 0):
                             if (checkerCell[self.x][self.y - 1].CanRegist()):
-                                #print("y - 1")
+                                if [self.x, self.y - 1] in nextCells:
+                                    return
                                 nextCells.append([self.x, self.y - 1])
                         if (self.y + 1 < Size):
                             if (checkerCell[self.x][self.y + 1].CanRegist()):
-                                #print("y + 1")
+                                if [self.x, self.y + 1] in nextCells:
+                                    return
                                 nextCells.append([self.x, self.y + 1])
 
                 #壁の有無を記したマップを作成
@@ -134,16 +136,13 @@ class Wall:
                             while(len(currentCells) > 0):
                                 cellPos = currentCells.pop()
                                 checkerCell[cellPos[0]][cellPos[1]].Regist(currentID, nextCells)
-                            print(len(currentCells), len(nextCells))
                             currentCells = nextCells.copy()
                             nextCells.clear()
-                            print(len(currentCells), len(nextCells), "after")
                         currentID += 1
                 #端に触れているチャンクIDを分析
-                invalidID = []
+                invalidID = set()
                 def appendInvalidID(x,y):
-                    if not checkerCell[x][y].chunkID in invalidID:
-                        invalidID.append(checkerCell[x][y].chunkID)
+                    invalidID.add(checkerCell[x][y].chunkID)
                 for x in range(0,Size,1):
                     appendInvalidID(x,0)
                 for x in range(0,Size,1):
