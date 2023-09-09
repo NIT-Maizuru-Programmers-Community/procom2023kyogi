@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import csv
 from enum import Enum
+import json
 
 #-1,0,1の範囲に正規化
 def Normalize(n):
@@ -96,16 +97,16 @@ class Cell:
     __nextMason = Team(0)
 
     #初期化。ここ以外でIDは用いない
-    def __init__(self, x, y, ID):
+    def __init__(self, x, y, structures, masons):
         self.x = x
         self.y = y
-        if ID == "1":
+        if structures == 1:
             self.structure = Structure(1)
-        elif ID == "2":
+        elif structures == 2:
             self.structure = Structure(2)
-        elif ID == "a":
+        if masons > 0:
             self.mason = Mason(Team.A, x ,y)
-        elif ID == "b":
+        elif masons < 0:
             self.mason = Mason(Team.B, x, y)
 
     #上に乗ることが出来るか
@@ -207,21 +208,20 @@ def CopyCells():
         copied.append(subCopied)
     return copied
 
-#CSVからマップ読み込み
+#jsonからマップ読み込み
 Cells = []
 Size = 0
 CurrentTurn = 0
 TeamMasonCount = 0
-with open('A11.csv') as f:
-    reader = csv.reader(f)
-    l = [row for row in reader]
-    Size = len(l)
+with open('server/sample.conf.txt', encoding="utf-8") as f:
+    load = json.load(f)
+    l = load["match"]["board"]
+    Size = len(l["structures"])
+    TeamMasonCount = l["mason"]
     for x in range(0, Size):
         subCells = []
         for y in range(0, Size):
-            cell = Cell(x,y,l[x][y])
-            if cell.mason.team == Team.A:
-                TeamMasonCount += 1
+            cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
             subCells.append(cell)
         Cells.append(subCells)
 #pyplotの画面を閉じる度に実行
