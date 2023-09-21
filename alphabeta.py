@@ -21,7 +21,6 @@ class Game:
         self.horizontal=horizontal
         self.field = field
         self.team=team
-
     def boardcheck(self,s):
         p=[]
         for i in range(vertical):
@@ -202,6 +201,7 @@ def wallbuild(game,x,y,mason):
                 return -float('inf')
     return areacalc(a[p],b[p],game.horizontal)
 
+#movemason():
 
 castle_xy=[[2,0],[2,1],[2,2],[2,-1],[2,-2],[1,2],[1,-2],[0,2],[0,-2],[-1,2],[-1,-2],[-2,0],[-2,1],[-2,2],[-2,-1],[-2,-2]]
 def twentyfourcheck(x,y,game,b):
@@ -226,8 +226,8 @@ def temporary_evaluator(Game,cond,mason):
     if -1<cond<8:
         if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanEnter(mason.team):
             return -float('inf')
-        move[cond]        
-
+        point+=moving
+        
     if 7<cond<12:
         point = 100
         if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanPlace(mason.team):
