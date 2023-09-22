@@ -242,6 +242,7 @@ def temporary_evaluator(Game,cond,mason):
         evaluation += wallbreak()*breaking
     evaluation+=area
     return evaluation
+##行動できないときの返り値は？
     
 def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason): 
     best_move_arr=[0]*num_per
