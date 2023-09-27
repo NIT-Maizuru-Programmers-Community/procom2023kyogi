@@ -230,22 +230,22 @@ def temporary_evaluator(Game,cond,mason):
         
     if 7<cond<12:
         point = 100
-        if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanPlace(mason.team):
+        if not Game.field[mason.x+move[cond-8][0]][mason.y+move[cond-8][1]].CanPlace(mason.team):
             return -float('inf')
         if twentyfourcheck(move[cond-8][0],move[cond-8][1],Game,2):
             point += castlepoint
         point += wallbuild(Game,mason.x+move[cond][0],mason.y+move[cond][1],mason)*building
 
     if 11<cond<16:
-        if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].Canbreak(mason.team):
+        if not Game.field[mason.x+move[cond-12][0]][mason.y+move[cond-12][1]].Canbreak(mason.team):
             return -float('inf')
         evaluation += wallbreak()*breaking
     evaluation+=area
     return evaluation
 ##行動できないときの返り値は？
     
-def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason): 
-    best_move_arr=[0]*num_per
+def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mikatamason,tekimason): 
+    best_move_arr=[]
     for k in range(num_per):
         if(movement<depth):
             t=Game.context(movement)
@@ -253,8 +253,11 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason):
             for i in range(16):
                 best_move=i
                 G_temp=copy.deepcopy(Game)
-                mason.Act()#####################
-                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per, mason)
+                if (movement%2==0):
+                    mikatamason[k].Act(i,move[i][0],move[i][1])
+                else:
+                    tekimason[k].Act(i,move[i][0],move[1])
+                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per, mikatamason,tekimason)
                 if t==1:
                     if (temp>=beta):
                         return temp
@@ -268,21 +271,30 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mason):
                         best_move=i
                         beta=temp
         elif depth==movement:
-            return temporary_evaluator(Game, best_move,mason)
-        if t==1:
+            best_move_arr.append(temporary_evaluator(Game, best_move,mikatamason[k]))
+            break
+        if (movement%2==0):
             best_move_arr.append(best_move)
             return alpha
-        elif t==-1:
+        else:
             best_move_arr.append(best_move)
             return beta
+    return best_move_arr
         
 def evaluator(Game,depth,movement):
     return evaluator_main(Game,depth,movement)
-    
+
 vertical=15
 horizontal=15
 number_people=3
+
 field = solver.Cells
 Team = solver.Team
 G=Game(vertical, horizontal, number_people,field,Team)
-Ma=solver.mason
+myMa=[0]*number_people
+myMacoor=[0,0]*number_people
+tekiMa=[0]*number_people
+tekiMacoor=[0,0]*number_people
+for i in range(number_people):
+    myMa[i]=solver.Mason(1,myMacoor[i][0],myMacoor[i][1])
+    tekiMa[i]=solver.Mason(2,tekiMacoor[i][0],tekiMacoor[i][1])
