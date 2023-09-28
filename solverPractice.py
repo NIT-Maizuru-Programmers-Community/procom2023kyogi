@@ -42,11 +42,13 @@ class Mason:
         self.team = team
     
     #毎ターンの行動
-    def Act(self):
-        if Cells[self.x + 1][self.y].CanPlace(self.team):
-            self.Place(1, 0)
-        else:
-            self.Move(0, 1)
+    def Act(self,cond,dx,dy):
+        if -1<cond<8:
+            self.Move(dx, dy)
+        elif 7<cond<12:
+            self.Place(dx, dy)
+        elif 11<cond<16:
+            self.Break(dx, dy)
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
