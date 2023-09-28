@@ -244,7 +244,7 @@ def temporary_evaluator(Game,cond,mason):
     return evaluation
 ##行動できないときの返り値は？
     
-def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mikatamason,tekimason): 
+def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason): 
     best_move_arr=[]
     for k in range(num_per):
         if(movement<depth):
@@ -257,7 +257,7 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mikatamason,teki
                     mikatamason[k].Act(i,move[i][0],move[i][1])
                 else:
                     tekimason[k].Act(i,move[i][0],move[1])
-                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, per, mikatamason,tekimason)
+                temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, mikatamason,tekimason)
                 if t==1:
                     if (temp>=beta):
                         return temp
@@ -281,8 +281,8 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, per, mikatamason,teki
             return beta
     return best_move_arr
         
-def evaluator(Game,depth,movement):
-    return evaluator_main(Game,depth,movement)
+def evaluator(Game,depth,movement,num_per,mikata,teki):
+    return evaluator_main(Game,depth,movement,num_per,-float('inf'),float('inf'),mikata,teki)
 
 vertical=15
 horizontal=15

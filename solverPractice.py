@@ -1,9 +1,12 @@
 import math
 import numpy as np
 from matplotlib import pyplot as plt
+import copy
 import csv
 from enum import Enum
 import json
+import alphabeta
+
 
 #-1,0,1の範囲に正規化
 def Normalize(n):
@@ -224,6 +227,15 @@ with open('server/sample.conf.txt', encoding="utf-8") as f:
             cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
             subCells.append(cell)
         Cells.append(subCells)
+field = copy.deepcopy(Cells)
+G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+myMa=[0]*TeamMasonCount
+myMacoor=[0,0]*TeamMasonCount
+tekiMa=[0]*TeamMasonCount
+tekiMacoor=[0,0]*TeamMasonCount
+for i in range(TeamMasonCount):
+    myMa[i]=Mason(1,myMacoor[i][0],myMacoor[i][1])
+    tekiMa[i]=Mason(2,tekiMacoor[i][0],tekiMacoor[i][1])
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1
