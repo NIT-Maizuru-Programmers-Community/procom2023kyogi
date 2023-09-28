@@ -218,7 +218,7 @@ Cells = []
 Size = 0
 CurrentTurn = 0
 TeamMasonCount = 0
-with open(r'C:\Users\s9122\OneDrive\Documents\procom\kyogi\procom2023\server\sample.conf.txt', encoding="utf-8") as f:
+with open(r'C:\procom\kyogi\procom2023\server\sample.conf.txt', encoding="utf-8") as f:
     load = json.load(f)
     l = load["match"]["board"]
     Size = len(l["structures"])
@@ -240,9 +240,9 @@ tekiMacoor=[]
 for i in range(Size):
     for j in range(Size):
         if cell.mason.team == Team.A:
-            myMacoor.append([i,j])
+            myMacoor.append(i,j)
         elif cell.mason.team == Team.B:
-            tekiMacoor.append([i,j])
+            tekiMacoor.append(i,j)
 
 for i in range(TeamMasonCount):
     myMa[i]=Mason(1,myMacoor[i][0],myMacoor[i][1])
