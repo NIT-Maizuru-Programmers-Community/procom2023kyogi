@@ -9,7 +9,6 @@ import sys
 import math
 import copy
 import itertools
-import solverPractice
 import calcArea
 #Cells,Size,CurrentTurn,TeamMasonCount
 
