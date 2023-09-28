@@ -229,12 +229,21 @@ with open('server/sample.conf.txt', encoding="utf-8") as f:
             cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
             subCells.append(cell)
         Cells.append(subCells)
+
+
 field = copy.deepcopy(Cells)
 G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
 myMa=[0]*TeamMasonCount
-myMacoor=[0,0]*TeamMasonCount
+myMacoor=[]
 tekiMa=[0]*TeamMasonCount
-tekiMacoor=[0,0]*TeamMasonCount
+tekiMacoor=[]
+for i in range(Size):
+    for j in range(Size):
+        if cell.mason.team == Team.A:
+            myMacoor.append([i,j])
+        elif cell.mason.team == Team.B:
+            tekiMacoor.append([i,j])
+
 for i in range(TeamMasonCount):
     myMa[i]=Mason(1,myMacoor[i][0],myMacoor[i][1])
     tekiMa[i]=Mason(2,tekiMacoor[i][0],tekiMacoor[i][1])
