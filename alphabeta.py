@@ -178,10 +178,10 @@ def wallbreak(game,x,y,mason):
     return area
     
 def wallbuild(game,x,y,mason):
-    if mason.team==solverPractice.Team.A:
-        k=solverPractice.Team.A
+    if mason.team==1:
+        k=1
     else:
-        k=solverPractice.Team.B
+        k=2
     if not twentyfourcheck(x,y,game,k):
         return 0
     else:
