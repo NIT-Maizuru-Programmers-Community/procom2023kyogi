@@ -9,7 +9,7 @@ import sys
 import math
 import copy
 import itertools
-import calcArea
+import calcAreaPractice
 #Cells,Size,CurrentTurn,TeamMasonCount
 
 class Game:
@@ -220,7 +220,7 @@ def temporary_evaluator(Game,cond,mason):
     building=1
     breaking=1
     castlepoint =1
-    area = calcArea.calcarea()
+    area = calcAreaPractice.calcarea()
     if -1<cond<8:
         if not Game.field[mason.x+move[cond][0]][mason.y+move[cond][1]].CanEnter(mason.team):
             return -float('inf')
