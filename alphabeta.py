@@ -9,8 +9,7 @@ import sys
 import math
 import copy
 import itertools
-
-import solver
+import solverPractice
 import calcArea
 #Cells,Size,CurrentTurn,TeamMasonCount
 
@@ -23,8 +22,8 @@ class Game:
         self.team=team
     def boardcheck(self,s):
         p=[]
-        for i in range(vertical):
-            for j in range(horizontal):
+        for i in range(self.vertical):
+            for j in range(self.horizontal):
                 if self.field[i][j].wall==s:
                     p.append([i,j])
         return p    
@@ -179,10 +178,10 @@ def wallbreak(game,x,y,mason):
     return area
     
 def wallbuild(game,x,y,mason):
-    if mason.team==Team.A:
-        k=Team.A
+    if mason.team==solverPractice.Team.A:
+        k=solverPractice.Team.A
     else:
-        k=Team.B
+        k=solverPractice.Team.B
     if not twentyfourcheck(x,y,game,k):
         return 0
     else:
@@ -283,18 +282,3 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
         
 def evaluator(Game,depth,movement,num_per,mikata,teki):
     return evaluator_main(Game,depth,movement,num_per,-float('inf'),float('inf'),mikata,teki)
-
-vertical=15
-horizontal=15
-number_people=3
-
-field = solver.Cells
-Team = solver.Team
-G=Game(vertical, horizontal, number_people,field,Team)
-myMa=[0]*number_people
-myMacoor=[0,0]*number_people
-tekiMa=[0]*number_people
-tekiMacoor=[0,0]*number_people
-for i in range(number_people):
-    myMa[i]=solver.Mason(1,myMacoor[i][0],myMacoor[i][1])
-    tekiMa[i]=solver.Mason(2,tekiMacoor[i][0],tekiMacoor[i][1])
