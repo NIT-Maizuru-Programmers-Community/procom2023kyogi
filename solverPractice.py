@@ -233,20 +233,20 @@ with open(r'C:\procom\kyogi\procom2023\server\sample.conf.txt', encoding="utf-8"
 
 field = copy.deepcopy(Cells)
 G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
-myMa=[0]*TeamMasonCount
+myMa=[]
 myMacoor=[]
-tekiMa=[0]*TeamMasonCount
+tekiMa=[]
 tekiMacoor=[]
 for i in range(Size):
     for j in range(Size):
         if cell.mason.team == Team.A:
-            myMacoor.append(i,j)
+            myMacoor.append([i,j])
         elif cell.mason.team == Team.B:
-            tekiMacoor.append(i,j)
+            tekiMacoor.append([i,j])
 
 for i in range(TeamMasonCount):
-    myMa[i]=Mason(1,myMacoor[i][0],myMacoor[i][1])
-    tekiMa[i]=Mason(2,tekiMacoor[i][0],tekiMacoor[i][1])
+    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1]))
+    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1]))
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1
