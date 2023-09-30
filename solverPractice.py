@@ -7,7 +7,6 @@ from enum import Enum
 import json
 import alphabeta
 
-
 #-1,0,1の範囲に正規化
 def Normalize(n):
     return max(-1, min(n, 1))
@@ -29,6 +28,7 @@ class Structure(Enum):
     PLANE=0
     POOL=1
     CASTLE=2
+move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
 
 class Mason:
     x=0
@@ -230,7 +230,6 @@ with open(r'C:\procom\kyogi\procom2023\server\sample.conf.txt', encoding="utf-8"
             subCells.append(cell)
         Cells.append(subCells)
 
-
 field = copy.deepcopy(Cells)
 G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
 myMa=[]
@@ -239,14 +238,15 @@ tekiMa=[]
 tekiMacoor=[]
 for i in range(Size):
     for j in range(Size):
-        if cell.mason.team == Team.A:
+        if Cells[i][j].mason.team == Team.A:
             myMacoor.append([i,j])
-        elif cell.mason.team == Team.B:
+        elif Cells[i][j].mason.team == Team.B:
             tekiMacoor.append([i,j])
-
 for i in range(TeamMasonCount):
     myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1]))
     tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1]))
+
+
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1

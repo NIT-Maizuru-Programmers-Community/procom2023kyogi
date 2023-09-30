@@ -279,5 +279,5 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
             return beta
     return best_move_arr
         
-def evaluator(Game,depth,movement,num_per,mikata,teki):
-    return evaluator_main(Game,depth,movement,num_per,-float('inf'),float('inf'),mikata,teki)
+def evaluator(Game,movement,num_per,mikata,teki):
+    return evaluator_main(Game,6,movement,num_per,-float('inf'),float('inf'),mikata,teki)
