@@ -34,12 +34,14 @@ class Mason:
     x=0
     y=0
     team = Team(0)
+    teamID = 0
 
     #初期化
-    def __init__(self, team, x ,y):
+    def __init__(self, team, x ,y, teamID):
         self.x = x
         self.y = y
         self.team = team
+        self.teamID = teamID
     
     #毎ターンの行動
     def Act(self,cond,dx,dy):
@@ -86,7 +88,7 @@ class Mason:
             return
         if not Cells[rX][rY].CanEnter(self.team):
             return
-        Cells[rX][rY].Enter(self.team)
+        Cells[rX][rY].Enter(self.team, self.teamID)
         Cells[self.x][self.y].Exit()
     
     #何もしない
@@ -98,8 +100,9 @@ class Cell:
     y=0
     structure = Structure(0)
     wall = Team(0)
-    mason = Mason(Team.NONE, 0, 0)
+    mason = Mason(Team.NONE, 0, 0, 0)
     __nextMason = Team(0)
+    __nextMasonID = 0
 
     #初期化。ここ以外でIDは用いない
     def __init__(self, x, y, structures, masons):
@@ -110,9 +113,9 @@ class Cell:
         elif structures == 2:
             self.structure = Structure(2)
         if masons > 0:
-            self.mason = Mason(Team.A, x ,y)
+            self.mason = Mason(Team.A, x ,y, masons)
         elif masons < 0:
-            self.mason = Mason(Team.B, x, y)
+            self.mason = Mason(Team.B, x, y, masons)
 
     #上に乗ることが出来るか
     def CanEnter(self, team):
@@ -179,8 +182,9 @@ class Cell:
     def LateAct(self):
         if self.__nextMason == Team.NONE:
             return
-        self.mason = Mason(self.__nextMason, self.x, self.y)
+        self.mason = Mason(self.__nextMason, self.x, self.y, self.__nextMasonID)
         self.__nextMason = Team(0)
+        self.__nextMasonID = 0
 
     #自身に城壁設置
     def Place(self, team):
@@ -191,12 +195,13 @@ class Cell:
         self.wall = Team.NONE
 
     #職人が入ってくる
-    def Enter(self, team):
+    def Enter(self, team, masonID):
         self.__nextMason = team
+        self.__nextMasonID = masonID
 
     #職人が出ていく
     def Exit(self):
-        self.mason = Mason(Team.NONE, 0, 0)
+        self.mason = Mason(Team.NONE, 0, 0, 0)
 
 def CopyCells():
     copied = []
@@ -208,7 +213,7 @@ def CopyCells():
             cellCopied.y=y
             cellCopied.structure = Cells[x][y].structure
             cellCopied.wall = Cells[x][y].wall
-            cellCopied.mason = Mason(Cells[x][y].mason.team, x, y)
+            cellCopied.mason = Mason(Cells[x][y].mason.team, x, y, Cells[x][y].mason.teamID)
             subCopied.append(cellCopied)
         copied.append(subCopied)
     return copied
