@@ -161,7 +161,7 @@ def wall_dfs(t,G):
     return count, cent #三次元
         
 def wallbreak(game,x,y,mason):
-    a,b=wall_dfs(mason.team,game)
+    a,b=wall_dfs(mason.Team,game)
     for i in range(len(b)):
         if [x,y] in b[i]:
             p=i
@@ -177,7 +177,7 @@ def wallbreak(game,x,y,mason):
     return area
     
 def wallbuild(game,x,y,mason):
-    if mason.team==1:
+    if mason.Team==1:
         k=1
     else:
         k=2
@@ -185,7 +185,7 @@ def wallbuild(game,x,y,mason):
         return 0
     else:
         c,d=twentyfourcheck(x,y,game,k)
-        a,b=wall_dfs(mason.team,game)
+        a,b=wall_dfs(mason.Team,game)
         for i in range(len(b)):
             if [c,d] in b[i]:
                 p=i
