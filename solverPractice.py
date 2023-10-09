@@ -248,8 +248,8 @@ for i in range(Size):
         elif Cells[i][j].mason.team == Team.B:
             tekiMacoor.append([i,j])
 for i in range(TeamMasonCount):
-    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1]))
-    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1]))
+    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1],i))
 
 
 #pyplotの画面を閉じる度に実行
@@ -265,6 +265,7 @@ while(1):
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
     plt.show()
+    alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Act()
