@@ -34,6 +34,7 @@ class Mason:
     y=0
     team = Team(0)
     teamID = 0
+    move=[]
 
     #初期化
     def __init__(self, team, x ,y, teamID):
@@ -41,15 +42,16 @@ class Mason:
         self.y = y
         self.team = team
         self.teamID = teamID
+        self.move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     
     #毎ターンの行動
-    def Act(self,cond,dx,dy):
+    def Act(self,cond):
         if -1<cond<8:
-            self.Move(dx, dy)
+            self.Move(self.move[cond][0], self.move[cond][1])
         elif 7<cond<12:
-            self.Place(dx, dy)
+            self.Place(self.move[cond-8][0], self.move[cond-8][1])
         elif 11<cond<16:
-            self.Break(dx, dy)
+            self.Break(self.move[cond-12][0], self.move[cond-12][1])
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
@@ -172,10 +174,16 @@ class Cell:
             return "clear"
     
     #毎ターン実行される
-    def Act(self):
+    def Act(self, p):
         if self.mason.team == Team.NONE:
             return
-        self.mason.Act()
+        if self.mason.team == Team.B:
+            return
+        temp = self.mason.teamID
+        for _ in range(temp-1):
+            p /= 16
+        c = int(p % 16)
+        self.mason.Act(c)
 
     #Actのfor文が一旦終わった後実行される
     def LateAct(self):
@@ -250,7 +258,6 @@ for i in range(TeamMasonCount):
     myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
     tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1],i))
 
-move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1
@@ -265,14 +272,10 @@ while(1):
     plt.axis('square')
     plt.show()
     p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
-    #for x in range(0, Size):
-    #    for y in range(0, Size):
-    #        Cells[x][y].Act()
-    for i in range(TeamMasonCount):
-        cond = int(p % 16)
-        p //= 16
-        myMa[i].Act(cond, move[cond][0], move[cond][1])
-        print(cond, move[cond][0], move[cond][1])
+    print(p,CurrentTurn)
+    for x in range(0, Size):
+        for y in range(0, Size):
+            Cells[x][y].Act(p)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()
