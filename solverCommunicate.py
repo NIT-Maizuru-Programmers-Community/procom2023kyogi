@@ -231,7 +231,7 @@ url = 'https://procon34system.kosen.work/server?token='
 params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
 # GETリクエストを送信
 response = requests.get(url, params=params)
-print("レスポンス内容:", response.json())
+print("レスポンス内容:", response)
 
 load = response.json()
 l = load["match"]["board"]
