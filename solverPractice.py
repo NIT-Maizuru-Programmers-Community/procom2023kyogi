@@ -4,8 +4,10 @@ from matplotlib import pyplot as plt
 import copy
 import csv
 from enum import Enum
+import random
 import json
 import alphabeta
+import randomplay
 
 #-1,0,1の範囲に正規化
 def Normalize(n):
@@ -271,11 +273,17 @@ while(1):
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
     plt.show()
-    p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    p=[]
+    #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    for i in range(TeamMasonCount):
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
     print(p,CurrentTurn)
+    c=0
+    for i in range(TeamMasonCount):
+        c += p[i]*pow(16,i)
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x][y].Act(p)
+            Cells[x][y].Act(c)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()
