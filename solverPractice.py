@@ -28,7 +28,6 @@ class Structure(Enum):
     PLANE=0
     POOL=1
     CASTLE=2
-move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
 
 class Mason:
     x=0
@@ -267,14 +266,13 @@ while(1):
     plt.show()
     p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #for x in range(0, Size):
-        #for y in range(0, Size):
-            #Cells[x][y].Act()
-    print("df")
+    #    for y in range(0, Size):
+    #        Cells[x][y].Act()
     for i in range(TeamMasonCount):
         cond = int(p % 16)
         p //= 16
         myMa[i].Act(cond, move[cond][0], move[cond][1])
-        print('k')
+        print(cond, move[cond][0], move[cond][1])
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()

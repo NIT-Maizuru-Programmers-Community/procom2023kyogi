@@ -122,7 +122,7 @@ def areacalc(edge,walloriginal,Size):
             flag2 = False
             subArea1 = 0
             subArea2 = 0
-        areas += (max(area1, area2))
+        areas += max(area1, area2)
     return areas
       
 dx_dy=[[1,0],[0,1],[-1,0],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
@@ -275,7 +275,6 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
                 else:
                     G_temp.act(i,tekimason[k].x,tekimason[k].y,move[o][0],move[o][1],2,k)
             temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, mikatamason,tekimason,best_move)
-            print(movement,depth)
             if t==1:
                 if (temp>=beta):
                     return temp
@@ -294,7 +293,7 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
             c=p
             bm = c % 16
             c /= 16
-            fin+=temporary_evaluator(Game, bm, mikatamason[j])
+            fin += temporary_evaluator(Game, bm, mikatamason[j])
         return fin
     if ((depth - movement) >= 2):
         return p
@@ -304,4 +303,4 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
         return beta
         
 def evaluator(Game,movement,num_per,mikata,teki):
-    return evaluator_main(Game,movement+2,movement,num_per,-float('inf'),float('inf'),mikata,teki,0)
+    return evaluator_main(Game,movement+2,movement,num_per,-100000,100000,mikata,teki,0)
