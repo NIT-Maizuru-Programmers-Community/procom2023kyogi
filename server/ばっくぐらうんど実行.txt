@@ -1,0 +1,6 @@
+Start-Job {& 実行したいこまんど}
+
+Start-Job {& python get.py}
+
+Get-Job -id 1|Stop-Job
+Get-Job
