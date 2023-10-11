@@ -273,13 +273,24 @@ while(1):
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
     plt.show()
+    myMa=[]
+    myMacoor=[]
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                myMacoor.append([i,j])
+    for i in range(TeamMasonCount):
+        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    #print(p)
     for i in range(TeamMasonCount):
         p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
     print(p,CurrentTurn)
     c=0
     for i in range(TeamMasonCount):
+        print(p[i])
         c += p[i]*pow(16,i)
     for x in range(0, Size):
         for y in range(0, Size):

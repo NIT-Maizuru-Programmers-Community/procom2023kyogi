@@ -192,7 +192,7 @@ def wallbreak(game,x,y,mason):
     return area
     
 def wallbuild(game,x,y,mason):
-    if mason.Team==1:
+    if mason.team==1:
         k=1
     else:
         k=2
@@ -217,11 +217,17 @@ def wallbuild(game,x,y,mason):
 castle_xy=[[2,0],[2,1],[2,2],[2,-1],[2,-2],[1,2],[1,-2],[0,2],[0,-2],[-1,2],[-1,-2],[-2,0],[-2,1],[-2,2],[-2,-1],[-2,-2]]
 def twentyfourcheck(x,y,game,b):
     for i in range(8):
-        if game.field[x+dx_dy[i][0]][y+dx_dy[i][1]].structure==b:
-            return x+dx_dy[i][0],y+dx_dy[i][1]
+        try:
+            if game.field[x+dx_dy[i][0]][y+dx_dy[i][1]].structure==b:
+                return x+dx_dy[i][0],y+dx_dy[i][1]
+        except:
+            return False
     for j in range(16):
-        if game.field[x+castle_xy[j][0]][y+castle_xy[j][1]].structure==b:
-            return x+castle_xy[j][0],y+castle_xy[j][1]
+        try:
+            if game.field[x+castle_xy[j][0]][y+castle_xy[j][1]].structure==b:
+                return x+castle_xy[j][0],y+castle_xy[j][1]
+        except:
+            return False
     return False
 
 move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
@@ -246,10 +252,10 @@ def temporary_evaluator(Game,cond,mason):
             return -10000000
         if twentyfourcheck(move[cond-8][0],move[cond-8][1],Game,2):
             evaluation += castlepoint
-        evaluation += wallbuild(Game,mason.x+move[cond][0],mason.y+move[cond][1],mason)*building
+        evaluation += wallbuild(Game,mason.x+move[cond-8][0],mason.y+move[cond-8][1],mason)*building
 
     if 11<cond<16:
-        if not Game.field[mason.x+move[cond-12][0]][mason.y+move[cond-12][1]].Canbreak(mason.team):
+        if not Game.field[mason.x+move[cond-12][0]][mason.y+move[cond-12][1]].CanBreak(mason.team):
             print("s")
             return -10000000
         evaluation += wallbreak()*breaking
@@ -258,21 +264,21 @@ def temporary_evaluator(Game,cond,mason):
     return evaluation
 ##行動できないときの返り値は？
     
-def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason):
+def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason,best_move):
     p=0
-    if movement == depth:
+    if movement >= depth:
         fin=0
         for j in range(num_per):
-            c=p
-            bm = c % 16
-            c /= 16
+            c=best_move
+            bm = int(c % 16)
+            c //= 16
             fin += temporary_evaluator(Game, bm, mikatamason[j])
         return fin
     else:
         t=Game.context(movement+1)
         for i in range(16**num_per):
             G_temp=copy.copy(Game)
-            bm=[0]*num_per
+            bm=0
             c = i
             for k in range(num_per):
                 bm = int(c % 16)
@@ -286,27 +292,30 @@ def evaluator_main(Game,depth,movement,num_per,alpha,beta, mikatamason,tekimason
                     G_temp.act(i,mikatamason[k].x,mikatamason[k].y,move[o][0],move[o][1],1,k)
                 else:
                     G_temp.act(i,tekimason[k].x,tekimason[k].y,move[o][0],move[o][1],2,k)
-            temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, mikatamason,tekimason)
+            temp=evaluator_main(G_temp, depth, movement+1, num_per, alpha, beta, mikatamason,tekimason,i)
             if t==1:
                 if (temp>=beta):
+                    print('u')
                     return temp
                 elif temp>alpha:
                     alpha=temp
                     p=i
-            elif t==-1:
+            else:
                 if temp<=alpha:
+                    print('u')
                     return temp
                 elif temp>beta:
                     beta=temp
                     p=i
+    print('t')
+    print(movement,depth)
     if ((depth - movement) >= 2):
-        print("k")
         return p
-    if (movement%2==0):
+    if t==1:
         return alpha
     else:
         return beta
         
 def evaluator(Game,movement,num_per,mikata,teki):
-    k = evaluator_main(Game,movement+2,movement,num_per,-100000,100000,mikata,teki)
+    k = evaluator_main(Game,movement+2,movement,num_per,-100000,100000,mikata,teki,0)
     return k
