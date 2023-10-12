@@ -1,10 +1,34 @@
 import math
 import numpy as np
 from matplotlib import pyplot as plt
+import copy
 import csv
 from enum import Enum
-import requests
+import random
 import json
+import alphabeta
+import randomplay
+import requests
+
+def vec2dir(x,y):
+    if (x,y) == (-1,1):
+        return 1
+    if (x,y) == (0,1):
+        return 2
+    if (x,y) == (1,1):
+        return 3
+    if (x,y) == (1,0):
+        return 4
+    if (x,y) == (1,-1):
+        return 5
+    if (x,y) == (0,-1):
+        return 6
+    if (x,y) == (-1,-1):
+        return 7
+    if (x,y) == (-1,0):
+        return 8
+    else:
+        return 0
 
 #-1,0,1の範囲に正規化
 def Normalize(n):
@@ -33,6 +57,7 @@ class Mason:
     y=0
     team = Team(0)
     teamID = 0
+    move=[]
 
     #初期化
     def __init__(self, team, x ,y, teamID):
@@ -40,13 +65,16 @@ class Mason:
         self.y = y
         self.team = team
         self.teamID = teamID
+        self.move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     
     #毎ターンの行動
-    def Act(self):
-        if Cells[self.x + 1][self.y].CanPlace(self.team):
-            self.Place(1, 0)
-        else:
-            self.Move(0, 1)
+    def Act(self,cond):
+        if -1<cond<8:
+            self.Move(self.move[cond][0], self.move[cond][1])
+        elif 7<cond<12:
+            self.Place(self.move[cond-8][0], self.move[cond-8][1])
+        elif 11<cond<16:
+            self.Break(self.move[cond-12][0], self.move[cond-12][1])
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
@@ -61,6 +89,7 @@ class Mason:
         if not Cells[rX][rY].CanPlace(self.team):
             return
         Cells[rX][rY].Place(self.team)
+        action.append({'type': 2,'dir': vec2dir(x,y),})
     
     #相対座標x,yの城壁破壊
     def Break(self,x,y):
@@ -73,6 +102,7 @@ class Mason:
         if IsOutOfSize(rX, rY):
             return
         Cells[rX][rY].Break()
+        action.append({'type': 3,'dir': vec2dir(x,y),})
     
     #相対座標x,yに移動
     def Move(self,x,y):
@@ -86,6 +116,7 @@ class Mason:
             return
         Cells[rX][rY].Enter(self.team, self.teamID)
         Cells[self.x][self.y].Exit()
+        action.append({'type': 1,'dir': vec2dir(x,y),})
     
     #何もしない
     def Skip():
@@ -169,10 +200,16 @@ class Cell:
             return "clear"
     
     #毎ターン実行される
-    def Act(self):
+    def Act(self, p):
         if self.mason.team == Team.NONE:
             return
-        self.mason.Act()
+        if self.mason.team == Team.B:
+            return
+        temp = self.mason.teamID
+        for _ in range(temp-1):
+            p /= 16
+        c = int(p % 16)
+        self.mason.Act(c)
 
     #Actのfor文が一旦終わった後実行される
     def LateAct(self):
@@ -214,9 +251,12 @@ def CopyCells():
         copied.append(subCopied)
     return copied
 
+headers = {'Content-Type': 'application/json',}
+params = {'token': '1234',}
+action = []
+
 # サーバーからの応答を表示
 #print("レスポンス内容:", response.json())
-
 #jsonからマップ読み込み
 Cells = []
 Size = 0
@@ -225,7 +265,6 @@ TeamMasonCount = 0
 #with open('server/sample.conf.txt', encoding="utf-8") as f:
 #    load = json.load(f)
 # サーバーのURL
-
 url = 'http://localhost:3000/matches'
 # クエリパラメータ
 params = {'token': '1234'}
@@ -237,15 +276,38 @@ load = response.json()
 l = load["matches"][0]["board"]
 Size = len(l["structures"])
 TeamMasonCount = l["mason"]
-for x in range(0, Size):
-    subCells = []
-    for y in range(0, Size):
-        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
-        subCells.append(cell)
-    Cells.append(subCells)
+with open('server\sample.conf.txt', encoding="utf-8") as f:
+    load = json.load(f)
+    l = load["match"]["board"]
+    Size = len(l["structures"])
+    TeamMasonCount = l["mason"]
+    for x in range(0, Size):
+        subCells = []
+        for y in range(0, Size):
+            cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
+            subCells.append(cell)
+        Cells.append(subCells)
+
+field = copy.deepcopy(Cells)
+G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+myMa=[]
+myMacoor=[]
+tekiMa=[]
+tekiMacoor=[]
+for i in range(Size):
+    for j in range(Size):
+        if Cells[i][j].mason.team == Team.A:
+            myMacoor.append([i,j])
+        elif Cells[i][j].mason.team == Team.B:
+            tekiMacoor.append([i,j])
+for i in range(TeamMasonCount):
+    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1],i))
+
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1
+    action.clear()
     plt.cla
     for x in range(0, Size):
         for y in range(0, Size):
@@ -256,9 +318,31 @@ while(1):
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
     plt.show()
+    myMa=[]
+    myMacoor=[]
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                myMacoor.append([i,j])
+    for i in range(TeamMasonCount):
+        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+
+    p=[]
+    #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    #print(p)
+    for i in range(TeamMasonCount):
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
+    print(p,CurrentTurn)
+    c=0
+    for i in range(TeamMasonCount):
+        print(p[i])
+        c += p[i]*pow(16,i)
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x][y].Act()
+            Cells[x][y].Act(c)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()
+    json_data = {'turn': CurrentTurn,'actions': action,}
+    response = requests.post('http://localhost:3000/matches/10', params=params, headers=headers, json=json_data)
+    print(json_data)
