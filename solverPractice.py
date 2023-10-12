@@ -243,8 +243,6 @@ with open('server\sample.conf.txt', encoding="utf-8") as f:
             cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
             subCells.append(cell)
         Cells.append(subCells)
-
-G=alphabeta.Game(Size, Size, TeamMasonCount,Cells,Team)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -282,7 +280,7 @@ while(1):
         myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
 
     p=[]
-    #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    #p = alphabeta.evaluator(Cells,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
         p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
