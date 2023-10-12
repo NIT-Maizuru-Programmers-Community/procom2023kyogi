@@ -370,6 +370,7 @@ while(1):
     responseTurn = requests.get(url, params=params)
     loadTurn = responseTurn.json()
     lTurn = loadTurn["board"]
+    print(lTurn)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
