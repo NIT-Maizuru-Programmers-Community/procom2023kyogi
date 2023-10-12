@@ -13,12 +13,11 @@ import calcAreaPractice
 #Cells,Size,CurrentTurn,TeamMasonCount
 
 class Game:
-    def __init__(self,vertical,horizontal,number_people,field,team):
+    def __init__(self,vertical,horizontal,number_people,field):
         self.number_people=number_people
         self.vertical=vertical
         self.horizontal=horizontal
         self.field = field
-        self.team=team
     def boardcheck(self,s):
         p=[]
         for i in range(self.vertical):

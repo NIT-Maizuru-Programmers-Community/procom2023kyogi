@@ -8,6 +8,27 @@ import random
 import json
 import alphabeta
 import randomplay
+import requests
+
+def vec2dir(x,y):
+    if (x,y) == (-1,1):
+        return 1
+    if (x,y) == (0,1):
+        return 2
+    if (x,y) == (1,1):
+        return 3
+    if (x,y) == (1,0):
+        return 4
+    if (x,y) == (1,-1):
+        return 5
+    if (x,y) == (0,-1):
+        return 6
+    if (x,y) == (-1,-1):
+        return 7
+    if (x,y) == (-1,0):
+        return 8
+    else:
+        return 0
 
 #-1,0,1の範囲に正規化
 def Normalize(n):
@@ -68,6 +89,7 @@ class Mason:
         if not Cells[rX][rY].CanPlace(self.team):
             return
         Cells[rX][rY].Place(self.team)
+        action.append({'type': 2,'dir': vec2dir(x,y),})
     
     #相対座標x,yの城壁破壊
     def Break(self,x,y):
@@ -80,6 +102,7 @@ class Mason:
         if IsOutOfSize(rX, rY):
             return
         Cells[rX][rY].Break()
+        action.append({'type': 3,'dir': vec2dir(x,y),})
     
     #相対座標x,yに移動
     def Move(self,x,y):
@@ -93,6 +116,7 @@ class Mason:
             return
         Cells[rX][rY].Enter(self.team, self.teamID)
         Cells[self.x][self.y].Exit()
+        action.append({'type': 1,'dir': vec2dir(x,y),})
     
     #何もしない
     def Skip():
@@ -119,6 +143,12 @@ class Cell:
             self.mason = Mason(Team.A, x ,y, masons)
         elif masons < 0:
             self.mason = Mason(Team.B, x, y, masons)
+
+    def Set(self, structures, masons, walls, territories):
+        if structures == 1:
+            self.structure = Structure(1)
+        elif structures == 2:
+            self.structure = Structure(2)
 
     #上に乗ることが出来るか
     def CanEnter(self, team):
@@ -227,25 +257,40 @@ def CopyCells():
         copied.append(subCopied)
     return copied
 
+headers = {'Content-Type': 'application/json',}
+action = []
+
+# サーバーからの応答を表示
+#print("レスポンス内容:", response.json())
 #jsonからマップ読み込み
 Cells = []
 Size = 0
 CurrentTurn = 0
 TeamMasonCount = 0
-with open('server\sample.conf.txt', encoding="utf-8") as f:
-    load = json.load(f)
-    l = load["match"]["board"]
-    Size = len(l["structures"])
-    TeamMasonCount = l["mason"]
-    for x in range(0, Size):
-        subCells = []
-        for y in range(0, Size):
-            cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
-            subCells.append(cell)
-        Cells.append(subCells)
+#with open('server/sample.conf.txt', encoding="utf-8") as f:
+#    load = json.load(f)
+# サーバーのURL
+url = 'http://localhost:3000/matches'
+# クエリパラメータ
+params = {'token': '1234'}
+# GETリクエストを送信
+response = requests.get(url, params=params)
+print("レスポンス内容:", response.text)
 
-field = copy.deepcopy(Cells)
-G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+load = response.json()
+l = load["matches"][0]["board"]
+Size = len(l["structures"])
+TeamMasonCount = l["mason"]
+url += "/"
+url += str(load["matches"][0]["id"])
+for x in range(0, Size):
+    subCells = []
+    for y in range(0, Size):
+        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
+        subCells.append(cell)
+    Cells.append(subCells)
+
+G=alphabeta.Game(Size, Size, TeamMasonCount,Cells)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -256,13 +301,11 @@ for i in range(Size):
             myMacoor.append([i,j])
         elif Cells[i][j].mason.team == Team.B:
             tekiMacoor.append([i,j])
-for i in range(TeamMasonCount):
-    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
-    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1],i))
 
 #pyplotの画面を閉じる度に実行
 while(1):
     CurrentTurn += 1
+    action.clear()
     plt.cla
     for x in range(0, Size):
         for y in range(0, Size):
@@ -298,3 +341,12 @@ while(1):
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()
+    json_data = {'turn': CurrentTurn,'actions': action,}
+    response = requests.post(url, params=params, headers=headers, json=json_data)
+    print(json_data)
+    responseTurn = requests.get(url, params=params)
+    loadTurn = responseTurn.json()
+    lTurn = loadTurn["board"]
+    for x in range(0, Size):
+        for y in range(0, Size):
+            Cells[x,y] = Cell(x,y,lTurn["structures"][x][y],lTurn["masons"][x][y])
