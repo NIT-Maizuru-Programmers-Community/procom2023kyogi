@@ -226,15 +226,15 @@ TeamMasonCount = 0
 #    load = json.load(f)
 # サーバーのURL
 
-url = 'https://procon34system.kosen.work/server?token='
+url = 'http://localhost:3000/matches'
 # クエリパラメータ
-params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
+params = {'token': '1234'}
 # GETリクエストを送信
 response = requests.get(url, params=params)
-print("レスポンス内容:", response)
+print("レスポンス内容:", response.text)
 
 load = response.json()
-l = load["match"]["board"]
+l = load["matches"][0]["board"]
 Size = len(l["structures"])
 TeamMasonCount = l["mason"]
 for x in range(0, Size):
