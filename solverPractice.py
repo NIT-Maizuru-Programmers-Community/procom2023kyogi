@@ -244,8 +244,7 @@ with open('server\sample.conf.txt', encoding="utf-8") as f:
             subCells.append(cell)
         Cells.append(subCells)
 
-field = copy.deepcopy(Cells)
-G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+G=alphabeta.Game(Size, Size, TeamMasonCount,Cells,Team)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
