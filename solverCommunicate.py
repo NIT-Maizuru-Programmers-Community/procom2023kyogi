@@ -144,6 +144,12 @@ class Cell:
         elif masons < 0:
             self.mason = Mason(Team.B, x, y, masons)
 
+    def Set(self, structures, masons, walls, territories):
+        if structures == 1:
+            self.structure = Structure(1)
+        elif structures == 2:
+            self.structure = Structure(2)
+
     #上に乗ることが出来るか
     def CanEnter(self, team):
         if self.structure == Structure.POOL:
@@ -252,7 +258,6 @@ def CopyCells():
     return copied
 
 headers = {'Content-Type': 'application/json',}
-params = {'token': '1234',}
 action = []
 
 # サーバーからの応答を表示
@@ -276,20 +281,16 @@ load = response.json()
 l = load["matches"][0]["board"]
 Size = len(l["structures"])
 TeamMasonCount = l["mason"]
-with open('server\sample.conf.txt', encoding="utf-8") as f:
-    load = json.load(f)
-    l = load["match"]["board"]
-    Size = len(l["structures"])
-    TeamMasonCount = l["mason"]
-    for x in range(0, Size):
-        subCells = []
-        for y in range(0, Size):
-            cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
-            subCells.append(cell)
-        Cells.append(subCells)
+url += "/"
+url += str(load["matches"][0]["id"])
+for x in range(0, Size):
+    subCells = []
+    for y in range(0, Size):
+        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
+        subCells.append(cell)
+    Cells.append(subCells)
 
-field = copy.deepcopy(Cells)
-G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+G=alphabeta.Game(Size, Size, TeamMasonCount,Cells)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -300,9 +301,6 @@ for i in range(Size):
             myMacoor.append([i,j])
         elif Cells[i][j].mason.team == Team.B:
             tekiMacoor.append([i,j])
-for i in range(TeamMasonCount):
-    myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
-    tekiMa.append(Mason(2,tekiMacoor[i][0],tekiMacoor[i][1],i))
 
 #pyplotの画面を閉じる度に実行
 while(1):
@@ -344,5 +342,11 @@ while(1):
         for y in range(0, Size):
             Cells[x][y].LateAct()
     json_data = {'turn': CurrentTurn,'actions': action,}
-    response = requests.post('http://localhost:3000/matches/10', params=params, headers=headers, json=json_data)
+    response = requests.post(url, params=params, headers=headers, json=json_data)
     print(json_data)
+    responseTurn = requests.get(url, params=params)
+    loadTurn = responseTurn.json()
+    lTurn = loadTurn["board"]
+    for x in range(0, Size):
+        for y in range(0, Size):
+            Cells[x,y] = Cell(x,y,lTurn["structures"][x][y],lTurn["masons"][x][y])
