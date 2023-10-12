@@ -128,6 +128,8 @@ class Cell:
     structure = Structure(0)
     wall = Team(0)
     mason = Mason(Team.NONE, 0, 0, 0)
+    isTerritoryA = False
+    isTerritoryB = False
     __nextMason = Team(0)
     __nextMasonID = 0
 
@@ -144,11 +146,31 @@ class Cell:
         elif masons < 0:
             self.mason = Mason(Team.B, x, y, masons)
 
-    def Set(self, structures, masons, walls, territories):
-        if structures == 1:
-            self.structure = Structure(1)
-        elif structures == 2:
-            self.structure = Structure(2)
+    def Set(self, masons, walls, territories):
+        if masons > 0:
+            self.mason = Mason(Team.A, x ,y, masons)
+        elif masons < 0:
+            self.mason = Mason(Team.B, x, y, masons)
+        else:
+            self.mason = Mason(Team.NONE, x, y, masons)
+        if walls == 1:
+            self.wall = Team.A
+        elif walls == 2:
+            self.wall = Team.B
+        else:
+            self.wall = Team.NONE
+        if territories == 1:
+            self.isTerritoryA = True
+            self.isTerritoryB = False
+        elif territories == 2:
+            self.isTerritoryA = False
+            self.isTerritoryB = True
+        elif territories == 3:
+            self.isTerritoryA = True
+            self.isTerritoryB = True
+        else:
+            self.isTerritoryA = False
+            self.isTerritoryB = False
 
     #上に乗ることが出来るか
     def CanEnter(self, team):
@@ -344,9 +366,10 @@ while(1):
     json_data = {'turn': CurrentTurn,'actions': action,}
     response = requests.post(url, params=params, headers=headers, json=json_data)
     print(json_data)
+
     responseTurn = requests.get(url, params=params)
     loadTurn = responseTurn.json()
     lTurn = loadTurn["board"]
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x,y] = Cell(x,y,lTurn["structures"][x][y],lTurn["masons"][x][y])
+            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
