@@ -364,7 +364,7 @@ while(1):
         for y in range(0, Size):
             Cells[x][y].LateAct()
     json_data = {'turn': CurrentTurn,'actions': action,}
-    response = requests.post(url, params=params, headers=headers, json=json_data)
+    responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(json_data)
 
     responseTurn = requests.get(url, params=params)
