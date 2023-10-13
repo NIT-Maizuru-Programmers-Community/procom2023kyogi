@@ -13,7 +13,7 @@ params = {
 async def my_function(turn, json_data):
     async with aiohttp.ClientSession() as session:
         # "json_data" を更新
-        turn += 1  # "turn" を1ずつ増やす
+        
         json_data['turn'] = turn
         json_data['actions'][0]['type'] = 1
         json_data['actions'][0]['dir'] = 3
@@ -28,10 +28,11 @@ async def my_function(turn, json_data):
                 print("Request was successful")
             else:
                 print(f"Request failed with status code: {request.status}")
-                response_text = await request.text()
+                response_text = await request
                 print(f"Response: {response_text}")
         except aiohttp.ClientError as e:
             print(f"Request failed with error: {e}")
+        turn += 2  # "turn" を1ずつ増やす
         return turn
 
 async def schedule_function(interval, turn, json_data):
@@ -40,8 +41,8 @@ async def schedule_function(interval, turn, json_data):
         await asyncio.sleep(interval)  # 指定の秒数待つ
 
 async def main():
-    interval = 15  # 関数を呼び出す間隔（秒）
-    turn = 0  # "turn" の初期値
+    interval = 30  # 関数を呼び出す間隔（秒）
+    turn = 1  # "turn" の初期値
     json_data = {
         'turn': turn,
         'actions': [
