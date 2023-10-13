@@ -1,7 +1,7 @@
 {
   "teams": [
-    {"name": "先攻チーム", "token": "1234"},
-    {"name": "後攻チーム", "token": "2345"}
+    {"name": "先攻チーム", "token": "maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690"},
+    {"name": "後攻チーム", "token": "maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690"}
   ],
   "match": {
     "id": 10,
