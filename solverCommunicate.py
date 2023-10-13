@@ -373,12 +373,16 @@ while(1):
             Cells[x][y].LateAct()
     json_data = {'turn': CurrentTurn,'actions': action,}
     responsePost = requests.post(url, params=params, headers=headers, json=json_data)
+    while responsePost.text == "TooEarly":
+        responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(responsePost, json_data)
 
-    time.sleep(waitTime * 2 * 0.99)
+    #time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 2
 
     responseTurn = requests.get(url, params=params)
+    while responseTurn.json()[""]:
+
     print(responseTurn)
     loadTurn = responseTurn.json()
     lTurn = loadTurn["board"]
