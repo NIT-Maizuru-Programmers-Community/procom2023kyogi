@@ -10,6 +10,7 @@ import alphabeta
 import randomplay
 import requests
 import time
+import asyncio
 
 def vec2dir(x,y):
     if (x,y) == (-1,1):
@@ -314,6 +315,7 @@ for x in range(0, Size):
         subCells.append(cell)
     Cells.append(subCells)
 
+G=alphabeta.Game(Size, Size, TeamMasonCount,Cells)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -332,8 +334,18 @@ if not load["matches"][0]["first"]:
     print("wait" + str(waitTime) + "seconds")
     time.sleep(waitTime)
 
-#pyplotの画面を閉じる度に実行
-while(1):
+async def mainTask():
+    global CurrentTurn
+    if not ((CurrentTurn == 1) or (not load["matches"][0]["first"] and CurrentTurn == 2)):
+        responseTurn = requests.get(url, params=params)
+        print(responseTurn)
+        loadTurn = responseTurn.json()
+        lTurn = loadTurn["board"]
+        #print(lTurn)
+        for x in range(0, Size):
+            for y in range(0, Size):
+                Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+
     action.clear()
     plt.cla
     for x in range(0, Size):
@@ -358,7 +370,7 @@ while(1):
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size)))
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
     print(p,CurrentTurn)
     c=0
     for i in range(TeamMasonCount):
@@ -374,14 +386,11 @@ while(1):
     responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(responsePost, json_data)
 
-    time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 2
 
-    responseTurn = requests.get(url, params=params)
-    print(responseTurn)
-    loadTurn = responseTurn.json()
-    lTurn = loadTurn["board"]
-    #print(lTurn)
-    for x in range(0, Size):
-        for y in range(0, Size):
-            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+#pyplotの画面を閉じる度に実行
+async def periodic_task(interval):
+    while True:
+        await mainTask()
+        await asyncio.sleep(interval)
+asyncio.run(periodic_task(waitTime * 2))
