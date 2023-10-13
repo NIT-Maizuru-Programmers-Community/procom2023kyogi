@@ -1,13 +1,6 @@
 def randomplay(field,x,y,size):
     move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     p = []
-    for t in range(4):
-        try:
-            flag = field[x][y].GetStructureColor()
-            if flag == "gray":
-                p.append(t)
-        except:
-            continue
     for i in range(4,8):
         try:
             if (x+move[i][0] >= size) or (y+move[i][1] >= size) or (x+move[i][0] < 0) or (y+move[i][1] < 0):
