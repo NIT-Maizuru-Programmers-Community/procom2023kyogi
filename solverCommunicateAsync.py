@@ -11,6 +11,7 @@ import randomplay
 import requests
 import time
 import asyncio
+import aiohttp
 
 def vec2dir(x,y):
     if (x,y) == (-1,1):
@@ -327,70 +328,75 @@ for i in range(Size):
         elif Cells[i][j].mason.team == Team.B:
             tekiMacoor.append([i,j])
 
-#最初だけ実行
-CurrentTurn = 1
-if not load["matches"][0]["first"]:
-    CurrentTurn += 1
-    print("wait" + str(waitTime) + "seconds")
-    time.sleep(waitTime)
+async def mainTask(currentTurn):
+    async with aiohttp.ClientSession() as session:
+        if not ((currentTurn == 1) or (not load["matches"][0]["first"] and currentTurn == 2)):
+            responseTurn = requests.get(url, params=params)
+            print(responseTurn)
+            loadTurn = responseTurn.json()
+            lTurn = loadTurn["board"]
+            #print(lTurn)
+            for x in range(0, Size):
+                for y in range(0, Size):
+                    Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
 
-async def mainTask():
-    global CurrentTurn
-    if not ((CurrentTurn == 1)):
-        responseTurn = requests.get(url, params=params)
-        print(responseTurn)
-        loadTurn = responseTurn.json()
-        lTurn = loadTurn["board"]
-        #print(lTurn)
+        action.clear()
+        plt.cla
         for x in range(0, Size):
             for y in range(0, Size):
-                Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+                plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
+                if Cells[x][y].GetWallColor() != "clear":
+                    plt.plot(x, y, marker='s', markersize=15, c=Cells[x][y].GetWallColor())
+                if Cells[x][y].GetMasonColor() != "clear":
+                    plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
+        plt.axis('square')
+        #plt.show()
+        myMa=[]
+        myMacoor=[]
+        for i in range(Size):
+            for j in range(Size):
+                if Cells[i][j].mason.team == Team.A:
+                    myMacoor.append([i,j])
+        for i in range(TeamMasonCount):
+            myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
 
-    action.clear()
-    plt.cla
-    for x in range(0, Size):
-        for y in range(0, Size):
-            plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
-            if Cells[x][y].GetWallColor() != "clear":
-                plt.plot(x, y, marker='s', markersize=15, c=Cells[x][y].GetWallColor())
-            if Cells[x][y].GetMasonColor() != "clear":
-                plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
-    plt.axis('square')
-    #plt.show()
-    myMa=[]
-    myMacoor=[]
-    for i in range(Size):
-        for j in range(Size):
-            if Cells[i][j].mason.team == Team.A:
-                myMacoor.append([i,j])
-    for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+        p=[]
+        #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+        #print(p)
+        for i in range(TeamMasonCount):
+            p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
+        print(p,currentTurn)
+        c=0
+        for i in range(TeamMasonCount):
+            print(p[i])
+            c += p[i]*pow(16,i)
+        for x in range(0, Size):
+            for y in range(0, Size):
+                Cells[x][y].Act(c)
+        for x in range(0, Size):
+            for y in range(0, Size):
+                Cells[x][y].LateAct()
+        json_data = {'turn': currentTurn,'actions': action,}
+        responsePost = await session.post(url, params=params, headers=headers, json=json_data)
+        print(responsePost, json_data)
 
-    p=[]
-    #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
-    #print(p)
-    for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
-    print(p,CurrentTurn)
-    c=0
-    for i in range(TeamMasonCount):
-        print(p[i])
-        c += p[i]*pow(16,i)
-    for x in range(0, Size):
-        for y in range(0, Size):
-            Cells[x][y].Act(c)
-    for x in range(0, Size):
-        for y in range(0, Size):
-            Cells[x][y].LateAct()
-    json_data = {'turn': CurrentTurn,'actions': action,}
-    responsePost = requests.post(url, params=params, headers=headers, json=json_data)
-    print(responsePost, json_data)
-
-    CurrentTurn += 2
+        currentTurn += 2
+        return currentTurn
 
 #pyplotの画面を閉じる度に実行
-async def periodic_task(interval):
+async def schedule_function(interval, currentTurn):
     while True:
-        await mainTask()
+        currentTurn = await mainTask(currentTurn)
         await asyncio.sleep(interval)
-asyncio.run(periodic_task(waitTime * 2))
+
+async def main():
+    #最初だけ実行
+    CurrentTurn = 1
+    if not load["matches"][0]["first"]:
+        CurrentTurn += 1
+        print("wait" + str(waitTime) + "seconds")
+        time.sleep(waitTime)
+    await schedule_function(waitTime * 2, CurrentTurn)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())

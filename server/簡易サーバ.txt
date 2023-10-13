@@ -1,9 +1,1 @@
-<<<<<<< HEAD
 https://procon34system.kosen.work/server?token=
-=======
-<<<<<<< HEAD
-https://procon34system.kosen.work/server?token=
-=======
-htps://procon34system.kosen.work/server?token=
->>>>>>> b8ac6c79916ee7014132a2cab21842f9f6470301
->>>>>>> main
