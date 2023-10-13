@@ -336,7 +336,7 @@ if not load["matches"][0]["first"]:
 
 async def mainTask():
     global CurrentTurn
-    if not ((CurrentTurn == 1) or (not load["matches"][0]["first"] and CurrentTurn == 2)):
+    if not ((CurrentTurn == 1)):
         responseTurn = requests.get(url, params=params)
         print(responseTurn)
         loadTurn = responseTurn.json()
