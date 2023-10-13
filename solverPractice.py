@@ -234,7 +234,7 @@ CurrentTurn = 0
 TeamMasonCount = 0
 with open('server\sample.conf.txt', encoding="utf-8") as f:
     load = json.load(f)
-    l = load["match"]["board"]
+    l = load["matches"]["board"]
     Size = len(l["structures"])
     TeamMasonCount = l["mason"]
     for x in range(0, Size):
