@@ -1,1 +1,1 @@
-htps://procon34system.kosen.work/server?token=
+https://procon34system.kosen.work/server?token=
