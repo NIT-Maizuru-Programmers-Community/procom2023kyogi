@@ -149,41 +149,41 @@ def ShowCells():
             for y in range(0, Size):
                 plt.plot(
                     x,
-                    y,
+                    Size - 1 - y,
                     marker="s",
                     markersize=20,
-                    c=GetStructureColor(Board["structures"][x][y]),
+                    c=GetStructureColor(Board["structures"][y][x]),
                 )
                 if CurrentTurn > 2:
-                    if GetTerritoryColor(Board["territories"][x][y]) != "clear":
+                    if GetTerritoryColor(Board["territories"][y][x]) != "clear":
                         plt.plot(
                             x,
-                            y,
+                            Size - 1 - y,
                             marker="s",
                             markersize=10,
-                            c=GetTerritoryColor(Board["territories"][x][y]),
+                            c=GetTerritoryColor(Board["territories"][y][x]),
                         )
-                    if GetWallColor(Board["walls"][x][y]) != "clear":
+                    if GetWallColor(Board["walls"][y][x]) != "clear":
                         plt.plot(
                             x,
-                            y,
+                            Size - 1 - y,
                             marker="s",
                             markersize=10,
-                            c=GetWallColor(Board["walls"][x][y]),
+                            c=GetWallColor(Board["walls"][y][x]),
                         )
                 if GetMasonColor(Board["masons"][x][y]) != "clear":
                     plt.plot(
                         x,
-                        y,
+                        Size - 1 - y,
                         marker="s",
                         markersize=5,
-                        c=GetMasonColor(Board["masons"][x][y]),
+                        c=GetMasonColor(Board["masons"][y][x]),
                     )
         plt.axis("square")
         plt.pause(0.1)
 
 
-Thread1 = threading.Thread(target=Process)
+# Thread1 = threading.Thread(target=Process)
 Thread2 = threading.Thread(target=ShowCells)
-Thread1.start()
+# Thread1.start()
 Thread2.start()
