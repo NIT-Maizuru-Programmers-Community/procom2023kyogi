@@ -150,6 +150,9 @@ def Process():
 
 # グラフ描画処理
 def ShowCells():
+    global CurrentTurn
+    global Response
+
     while True:
         Board = Response["board"]
         for x in range(0, Size):
@@ -190,6 +193,7 @@ def ShowCells():
         plt.pause(0.1)
 
 
-Thread = threading.Thread(target=Process)
-Thread.start()
-ShowCells()
+Thread1 = threading.Thread(target=Process)
+Thread2 = threading.Thread(target=ShowCells)
+Thread1.start()
+Thread2.start()
