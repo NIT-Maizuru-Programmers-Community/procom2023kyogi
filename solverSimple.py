@@ -171,13 +171,13 @@ def ShowCells():
                     markersize=20,
                     c=GetStructureColor(Board["structures"][y][x]),
                 )
-                if CurrentTurn > 2:
+                if (IsFirst and CurrentTurn > 2) or ((not IsFirst) and CurrentTurn > 3):
                     if GetTerritoryColor(Board["territories"][y][x]) != "clear":
                         plt.plot(
                             x,
                             Size - 1 - y,
                             marker="s",
-                            markersize=10,
+                            markersize=15,
                             c=GetTerritoryColor(Board["territories"][y][x]),
                         )
                     if GetWallColor(Board["walls"][y][x]) != "clear":
