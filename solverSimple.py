@@ -102,6 +102,8 @@ for x in range(0, Size):
             Masons[Cells[x][y].mason - 1] = (x, y)
 
 CurrentTurn = 1
+Actions = []
+
 
 # 毎ターン処理
 def Process():
