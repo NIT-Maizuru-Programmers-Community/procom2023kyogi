@@ -1,3 +1,10 @@
+from enum import Enum
+
+class Team(Enum):
+    NONE=0
+    A=1
+    B=2
+
 def IsOutOfSize(x, y, Size):
     if (x < 0)|(Size <= x):
         return True
@@ -11,9 +18,10 @@ def randomplay(field,x,y,size,temp):
     for i in range(4,8):
         try:
             if IsOutOfSize(x+move[i][0],y+move[i][1],size):
+                print(i)
                 continue
-            if field[x+move[i][0]][y+move[i][1]].CanEnter(1):
-                for _ in range(2):
+            if field[x+move[i][0]][y+move[i][1]].CanEnter(Team.A):
+                for _ in range(1):
                     p.append(i)
             #if (temp == 8) or (temp == 9) or (temp == 10) or (temp == 11):
                 #for t in range(4,8):
@@ -29,9 +37,9 @@ def randomplay(field,x,y,size,temp):
             continue
     for j in range(8,12):
         try:
-            if (IsOutOfSize(x+move[j-8][0],y+move[j-8][1],size)) or (field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True) or (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == False) or j == temp:
+            if (IsOutOfSize(x+move[j-8][0],y+move[j-8][1],size)) or (field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True) or (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == False):
                 continue
-            if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == True):
+            if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(Team.A) == True):
                 for _ in range(4):
                     p.append(j)
         except:
@@ -40,7 +48,7 @@ def randomplay(field,x,y,size,temp):
         if IsOutOfSize(x+move[k-12][0],y+move[k-12][1],size):
             continue
         try:
-            if (field[x+move[k-12][0]][y+move[k-12][1]].CanBreak(1)):
+            if (field[x+move[k-12][0]][y+move[k-12][1]].CanBreak(Team.A)):
                 return [k] 
         except:
             continue

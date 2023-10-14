@@ -313,7 +313,7 @@ url += str(load["matches"][0]["id"])
 for x in range(0, Size):
     subCells = []
     for y in range(0, Size):
-        cell = Cell(x,y,l["structures"][y][x],l["masons"][y][x])
+        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
         subCells.append(cell)
     Cells.append(subCells)
 
@@ -350,19 +350,19 @@ while(1):
     #plt.show()
     myMa=[]
     myMacoor=[]
+    idcount=0
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
                 myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],myMacoor[i][2]))
+        myMa.append(Mason(1,myMacoor[myMacoor[i][2]-1][0],myMacoor[myMacoor[i][2]-1][1],myMacoor[myMacoor[i][2]-1][2]))
 
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        tempid = myMacoor[i][2] - 1
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[tempid].x,myMa[tempid].y,Size,temp[i])))
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size,temp[i])))
     print(p,CurrentTurn,TeamMasonCount)
     c=0
     temp = p
@@ -404,7 +404,7 @@ while(1):
     #print(lTurn)
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x][y].Set(lTurn["masons"][y][x],lTurn["walls"][y][x],lTurn["territories"][y][x])
+            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
     
     for i in range(Size):
         for j in range(Size):
