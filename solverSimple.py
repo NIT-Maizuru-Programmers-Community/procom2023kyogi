@@ -113,7 +113,7 @@ def Process():
     while True:
         if CurrentTurn > 1:
             ResponseGet = requests.get(Url, params=Param)
-            while ResponseGet.json()["turn"] <= CurrentTurn:
+            while ResponseGet.json()["turn"] < CurrentTurn:
                 with requests.get(Url, params=Param) as ResponseGet:
                     time.sleep(0.01)
             Response = ResponseGet.json()
