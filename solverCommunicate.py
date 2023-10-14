@@ -329,8 +329,6 @@ for i in range(Size):
 CurrentTurn = 1
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
-    print("wait" + str(waitTime) + "seconds")
-    time.sleep(waitTime)
 
 #pyplotの画面を閉じる度に実行
 while(1):
@@ -372,12 +370,17 @@ while(1):
             Cells[x][y].LateAct()
     json_data = {'turn': CurrentTurn,'actions': action,}
     responsePost = requests.post(url, params=params, headers=headers, json=json_data)
+    while responsePost.text == "TooEarly":
+        responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(responsePost, json_data)
 
-    time.sleep(waitTime * 2 * 0.99)
+    #time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 2
-
     responseTurn = requests.get(url, params=params)
+    while responseTurn.json()["turn"] < CurrentTurn - 1:
+        with requests.get(url, params=params) as responseTurn:
+            time.sleep(0.01)
+
     print(responseTurn)
     loadTurn = responseTurn.json()
     lTurn = loadTurn["board"]
@@ -385,3 +388,9 @@ while(1):
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                myMacoor.append([i,j])
+            elif Cells[i][j].mason.team == Team.B:
+                tekiMacoor.append([i,j])
