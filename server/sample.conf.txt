@@ -5,7 +5,7 @@
   ],
   "match": {
     "id": 10,
-    "turns": 30,
+    "turns": 60,
     "turnSeconds": 3,
     "bonus": {
       "wall": 10,

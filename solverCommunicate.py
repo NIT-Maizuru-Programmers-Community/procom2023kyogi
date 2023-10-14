@@ -330,8 +330,6 @@ for i in range(Size):
 CurrentTurn = 1
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
-    print("wait" + str(waitTime) + "seconds")
-    time.sleep(waitTime)
 
 #pyplotの画面を閉じる度に実行
 while(1):
@@ -379,9 +377,10 @@ while(1):
 
     #time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 2
-
     responseTurn = requests.get(url, params=params)
-    while responseTurn.json()[""]:
+    while responseTurn.json()["turn"] < CurrentTurn - 1:
+        with requests.get(url, params=params) as responseTurn:
+            time.sleep(0.01)
 
     print(responseTurn)
     loadTurn = responseTurn.json()
