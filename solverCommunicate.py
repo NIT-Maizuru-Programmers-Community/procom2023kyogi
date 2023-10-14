@@ -313,7 +313,7 @@ url += str(load["matches"][0]["id"])
 for x in range(0, Size):
     subCells = []
     for y in range(0, Size):
-        cell = Cell(x,y,l["structures"][y][x],l["masons"][y][x])
+        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
         subCells.append(cell)
     Cells.append(subCells)
 
@@ -403,7 +403,7 @@ while(1):
     #print(lTurn)
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x][y].Set(lTurn["masons"][y][x],lTurn["walls"][y][x],lTurn["territories"][y][x])
+            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
     
     for i in range(Size):
         for j in range(Size):
