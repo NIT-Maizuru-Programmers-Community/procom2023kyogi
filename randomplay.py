@@ -1,9 +1,31 @@
+import random
+
 def IsOutOfSize(x, y, Size):
     if (x < 0)|(Size <= x):
         return True
     if (y < 0)|(Size <= y):
         return True
     return False
+
+def vec2dir(x,y):
+    if (x,y) == (-1,1):
+        return 1
+    if (x,y) == (0,1):
+        return 2
+    if (x,y) == (1,1):
+        return 3
+    if (x,y) == (1,0):
+        return 4
+    if (x,y) == (1,-1):
+        return 5
+    if (x,y) == (0,-1):
+        return 6
+    if (x,y) == (-1,-1):
+        return 7
+    if (x,y) == (-1,0):
+        return 8
+    else:
+        return 0
 
 def CanEnter(field):
     return ((field.structure != 1) and (field.wall != 2) and (field.mason == 0))
@@ -14,9 +36,19 @@ def CanPlace(field):
 def CanBreak(field):
     return (field.wall == 2)
 
+def TypeJudge(p):
+    if 3 < p < 8:
+        return 1
+    if 8 < p < 12:
+        return 2
+    if 12 < p < 16:
+        return 3
+
 def randomplay(field,x,y,size):
     move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     p = []
+    a = 0
+    dx,dy = 0
     for i in range(4,16):
         try:
             if IsOutOfSize(x+move[i][0],y+move[i][1],size):
@@ -30,8 +62,11 @@ def randomplay(field,x,y,size):
                         p.append(i)
             if 12 < i < 16:
                 if (CanBreak(field[x+move[i][0]][y+move[i][1]])):
-                    p.append(i)
+                    return [i]
         except:
             continue
     print(p)
-    return p
+    a = random.choice(p)
+    type = TypeJudge(a)
+    vec = vec2dir([x+move[i][0]],[y+move[i][1]])
+    return type , vec
