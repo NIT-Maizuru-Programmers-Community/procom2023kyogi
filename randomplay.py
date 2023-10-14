@@ -29,11 +29,7 @@ def randomplay(field,x,y,size,temp):
             continue
     for j in range(8,12):
         try:
-            if IsOutOfSize(x+move[j-8][0],y+move[j-8][1],size):
-                continue
-            if field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True:
-                continue
-            if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == False):
+            if (IsOutOfSize(x+move[j-8][0],y+move[j-8][1],size)) or (field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True) or (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == False) or j == temp:
                 continue
             if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == True):
                 for _ in range(4):
