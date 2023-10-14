@@ -95,11 +95,11 @@ for y in range(0, Size):
     print("\n")"""
 
 # 初期処理
-Masons = [(0, 0)] * TeamMasonCount
+Masons = [[0, 0]] * TeamMasonCount
 for x in range(0, Size):
     for y in range(0, Size):
         if Cells[x][y].mason > 0:
-            Masons[Cells[x][y].mason - 1] = (x, y)
+            Masons[Cells[x][y].mason - 1] = [x, y]
 
 CurrentTurn = 0
 Actions = []
@@ -126,8 +126,12 @@ def Process():
         CurrentTurn += 1
 
         Actions.clear()
-        for masonX, masonY in Masons:
-            type, dir = randomplay.randomplay(Cells, masonX, masonY, Size)
+        for x in range(0, Size):
+            for y in range(0, Size):
+                if Cells[x][y].mason > 0:
+                    Masons[Cells[x][y].mason - 1] = [x, y]
+        for i in range(TeamMasonCount):
+            type, dir = randomplay.randomplay(Cells, Masons[i][0], Masons[i][1], Size)
             Actions.append(
                 {
                     "type": type,
