@@ -310,9 +310,9 @@ TeamMasonCount = l["mason"]
 waitTime = load["matches"][0]["turnSeconds"]
 url += "/"
 url += str(load["matches"][0]["id"])
-for x in range(0, Size):
+for y in range(0, Size):
     subCells = []
-    for y in range(0, Size):
+    for x in range(0, Size):
         cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
         subCells.append(cell)
     Cells.append(subCells)
@@ -347,7 +347,7 @@ while(1):
             if Cells[x][y].GetMasonColor() != "clear":
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
-    #plt.show()
+    plt.show()
     myMa=[]
     myMacoor=[]
     for i in range(Size):
@@ -390,7 +390,6 @@ while(1):
                 masonCountB += 1
     print("masonCountA: ", masonCountA, "   masonCountB: ", masonCountB)
 
-    #time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 1
     responseTurn = requests.get(url, params=params)
     while responseTurn.json()["turn"] < CurrentTurn - 1:
@@ -400,11 +399,12 @@ while(1):
     print(responseTurn)
     loadTurn = responseTurn.json()
     lTurn = loadTurn["board"]
-    #print(lTurn)
-    for x in range(0, Size):
-        for y in range(0, Size):
+    for y in range(0, Size):
+        for x in range(0, Size):
             Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
     
+    myMacoor.clear()
+    tekiMacoor.clear()
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
