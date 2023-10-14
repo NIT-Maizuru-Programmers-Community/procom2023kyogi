@@ -133,6 +133,7 @@ def Process():
                 if Cells[x][y].mason > 0:
                     Masons[Cells[x][y].mason - 1] = [x, y]
         for i in range(TeamMasonCount):
+            print(Masons[i][0], Masons[i][1])
             type, dir = randomplay.randomplay(Cells, Masons[i][0], Masons[i][1], Size)
             Actions.append(
                 {

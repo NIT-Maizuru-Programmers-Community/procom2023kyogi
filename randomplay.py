@@ -59,15 +59,18 @@ def randomplay(field,x,y,size):
     for i in range(4,16):
         try:
             if 3 < i < 8:
-                if (CanEnter(field[x+move[i][0]][y+move[i][1]])) and (IsOutOfSize(x+move[i][0],y+move[i][1],size)==False):
+                if (CanEnter(field[x+move[i][0]][y-move[i][1]])) and (IsOutOfSize(x+move[i][0],y-move[i][1],size)==False):
                     p.append(i)
             if 7 < i < 12:
-                print(field[x+move[i-8][0]][y+move[i-8][1]].wall,x+move[i-8][0],y+move[i-8][1])
-                if (CanPlace(field[x+move[i-8][0]][y+move[i-8][1]])) and (IsOutOfSize(x+move[i-8][0],y+move[i-8][1],size)==False):
+                print(field[x+move[i-8][0]][y+move[i-8][1]].wall,x+move[i-8][0],y-move[i-8][1])
+                if (CanPlace(field[x+move[i-8][0]][y-move[i-8][1]])) and (IsOutOfSize(x+move[i-8][0],y-move[i-8][1],size)==False):
+                    if OnCastle(field[x][y]):
+                        p = [i]
+                        break
                     for _ in range(3):
                         p.append(i)
             if 11 < i < 16:
-                if (CanBreak(field[x+move[i-12][0]][y+move[i-12][1]])) and (IsOutOfSize(x+move[i-12][0],y+move[i-12][1],size)==False):
+                if (CanBreak(field[x+move[i-12][0]][y-move[i-12][1]])) and (IsOutOfSize(x+move[i-12][0],y-move[i-12][1],size)==False):
                     return [i]
         except:
             continue
@@ -84,3 +87,13 @@ def randomplay(field,x,y,size):
     elif 11 < a < 16:
         dir = vec2dir(move[a-12][0],move[a-12][1])
     return type, dir
+
+def superrandom():
+    type=[1,2]
+    dir=[1,2,3,4,5,6,7,8]
+    k=random.choice(type)
+    if k == 1:
+        u=random.choice(dir)
+    else:
+        u=random.choice(dir[0:4])
+    return k,u
