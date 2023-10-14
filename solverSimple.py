@@ -94,9 +94,77 @@ for y in range(0, Size):
 
 # 初期処理
 CurrentTurn = 1
+Actions = []
+
 
 # ループ処理
-while True:
-    for x in range(0, Size):
-        for y in range(0, Size):
-            Cells[x][y].Set(Board)
+def Process():
+    while True:
+        Actions.clear()
+
+        CurrentTurn += 1
+
+        while Response["turn"] <= CurrentTurn:
+            with requests.get(Url, params=Param).json() as Response:
+                time.sleep(0.01)
+        Board = Response["board"]
+        for x in range(0, Size):
+            for y in range(0, Size):
+                Cells[x][y].Set(Board)
+
+        CurrentTurn += 1
+
+        json_data = {
+            "turn": CurrentTurn,
+            "actions": Actions,
+        }
+        responsePost = requests.post(Url, params=Param, headers=Header, json=json_data)
+        while responsePost.text == "TooEarly":
+            with requests.post(Url, params=Param, headers=Header, json=json_data) as responsePost:
+                time.sleep(0.01)
+
+
+def ShowCells():
+    while True:
+        for x in range(0, Size):
+            for y in range(0, Size):
+                plt.plot(
+                    x,
+                    y,
+                    marker="s",
+                    markersize=20,
+                    c=GetStructureColor(Board["structures"][x][y]),
+                )
+                if CurrentTurn > 1:
+                    if GetTerritoryColor(Board["territories"][x][y]) != "clear":
+                        plt.plot(
+                            x,
+                            y,
+                            marker="s",
+                            markersize=10,
+                            c=GetTerritoryColor(Board["territories"][x][y]),
+                        )
+                    if GetWallColor(Board["walls"][x][y]) != "clear":
+                        plt.plot(
+                            x,
+                            y,
+                            marker="s",
+                            markersize=10,
+                            c=GetWallColor(Board["walls"][x][y]),
+                        )
+                if GetMasonColor(Board["masons"][x][y]) != "clear":
+                    plt.plot(
+                        x,
+                        y,
+                        marker="s",
+                        markersize=5,
+                        c=GetMasonColor(Board["masons"][x][y]),
+                    )
+        plt.axis("square")
+        plt.pause(0.1)
+
+
+Thread1 = threading.Thread(target=Process)
+Thread2 = threading.Thread(target=ShowCells)
+Thread1.start()
+Thread2.start()
