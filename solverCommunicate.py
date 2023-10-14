@@ -332,6 +332,7 @@ for i in range(Size):
 CurrentTurn = 0
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
+temp = [0]*TeamMasonCount
 
 #pyplotの画面を閉じる度に実行
 while(1):
@@ -352,17 +353,18 @@ while(1):
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
-                myMacoor.append([i,j])
+                myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],myMacoor[i][2]))
 
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size)))
-    print(p,CurrentTurn)
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size,temp[i])))
+    print(p,CurrentTurn,TeamMasonCount)
     c=0
+    temp = p
     for i in range(TeamMasonCount):
         print(p[i])
         c += p[i]*pow(16,i)
