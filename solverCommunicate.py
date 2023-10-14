@@ -389,3 +389,9 @@ while(1):
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                myMacoor.append([i,j])
+            elif Cells[i][j].mason.team == Team.B:
+                tekiMacoor.append([i,j])
