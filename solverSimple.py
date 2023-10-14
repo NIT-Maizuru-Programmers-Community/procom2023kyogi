@@ -194,5 +194,6 @@ def ShowCells():
 
 
 Thread1 = threading.Thread(target=Process)
+Thread2 = threading.Thread(target=ShowCells)
 Thread1.start()
-ShowCells()
+Thread2.start()
