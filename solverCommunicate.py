@@ -374,6 +374,16 @@ while(1):
         responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(responsePost, json_data)
 
+    masonCountA = 0
+    masonCountB = 0
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                masonCountA += 1
+            elif Cells[i][j].mason.team == Team.B:
+                masonCountB += 1
+    print("masonCountA: ", masonCountA, "   masonCountB: ", masonCountB)
+
     #time.sleep(waitTime * 2 * 0.99)
     CurrentTurn += 2
     responseTurn = requests.get(url, params=params)
@@ -388,6 +398,7 @@ while(1):
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+    
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
