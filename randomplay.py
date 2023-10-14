@@ -13,8 +13,8 @@ def randomplay(field,x,y,size):
         try:
             if (x+move[i][0] >= size) or (y+move[i][1] >= size) or (x+move[i][0] < 0) or (y+move[i][1] < 0):
                 continue
-            #if field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True:
-                #continue
+            if field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True:
+                continue
             if field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1):
                 for _ in range(5):
                     p.append(j)
