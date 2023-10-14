@@ -338,7 +338,7 @@ temp = [0]*TeamMasonCount
 while(1):
     CurrentTurn += 1
     action.clear()
-    plt.cla
+    #plt.cla
     for x in range(0, Size):
         for y in range(0, Size):
             plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
@@ -347,16 +347,18 @@ while(1):
             if Cells[x][y].GetMasonColor() != "clear":
                 plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
     plt.axis('square')
-    plt.show()
+    #plt.show()
+    plt.pause(0.001)
+    plt.clf()
+
     myMa=[]
     myMacoor=[]
-    idcount=0
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
                 myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[myMacoor[i][2]-1][0],myMacoor[myMacoor[i][2]-1][1],myMacoor[myMacoor[i][2]-1][2]))
+        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],myMacoor[i][2]))
 
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)

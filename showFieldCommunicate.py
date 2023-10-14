@@ -5,27 +5,37 @@ import time
 import numpy as np
 
 #対応する色を返す(グラフ描画用)
-def GetStructureColor(id):
+def GetStructureColor(id):#構造物
     if id == 1:
         return "lightgreen"
     elif id == 2:
         return "gray"
     else:
         return "white"
-def GetWallColor(id):
+def GetWallColor(id):#城壁
     if id == 1:
         return "pink"
     elif id == 2:
         return "lightblue"
     else:
         return "clear"
-def GetMasonColor(id):
+def GetMasonColor(id):#職人
     if id > 0:
         return "red"
     elif id < 0:
         return "blue"
     else:
         return "clear"
+def GetTerritoryColor(id):#領地
+    if id == 1:
+        return "brown"
+    elif id == 2:
+        return "navy"
+    elif id == 3:
+        return "gold"
+    else:
+        return "clear"
+    
 
 headers = {'Content-Type': 'application/json',}
 
@@ -47,19 +57,24 @@ url += str(load["matches"][0]["id"])
 
 CurrentTurn = 1
 
-def _update(frame, x, y):
-    plt.cla
+while(1):
     for x in range(0, Size):
         for y in range(0, Size):
             plt.plot(x, y, marker='s', markersize=20, c=GetStructureColor(l["structures"][x][y]))
-            if GetWallColor(l["walls"][x][y]) != "clear":
-                plt.plot(x, y, marker='s', markersize=15, c=GetWallColor(l["walls"][x][y]))
+            if CurrentTurn > 1:
+                if GetTerritoryColor(l["territories"][x][y]) != "clear":
+                    plt.plot(x, y, marker='s', markersize=10, c=GetTerritoryColor(l["territories"][x][y]))
+                if GetWallColor(l["walls"][x][y]) != "clear":
+                    plt.plot(x, y, marker='s', markersize=10, c=GetWallColor(l["walls"][x][y]))
             if GetMasonColor(l["masons"][x][y]) != "clear":
-                plt.plot(x, y, marker='s', markersize=10, c=GetMasonColor(l["masons"][x][y]))
+                plt.plot(x, y, marker='s', markersize=5, c=GetMasonColor(l["masons"][x][y]))
     plt.axis('square')
 
     CurrentTurn += 1
     responseTurn = requests.get(url, params=params)
+    while responseTurn.text == "TooEarly":
+        with requests.get(url, params=params) as responseTurn:
+            time.sleep(0.01)
     while responseTurn.json()["turn"] < CurrentTurn - 1:
         with requests.get(url, params=params) as responseTurn:
             time.sleep(0.01)
@@ -68,20 +83,5 @@ def _update(frame, x, y):
     loadTurn = responseTurn.json()
     l = loadTurn["board"]
 
-
-# 描画領域
-fig = plt.figure(figsize=(Size, Size))
-# 描画するデータ (最初は空っぽ)
-x = []
-y = []
-params = {
-    'fig': fig,
-    'func': _update,  # グラフを更新する関数
-    'fargs': (x, y),  # 関数の引数 (フレーム番号を除く)
-    'interval': 10,  # 更新間隔 (ミリ秒)
-    'frames': np.arange(0, 10, 0.1),  # フレーム番号を生成するイテレータ
-    'repeat': False,  # 繰り返さない
-}
-anime = animation.FuncAnimation(**params)
-# グラフを表示する
-plt.show()
+    plt.pause(0.1)
+    plt.clf()
