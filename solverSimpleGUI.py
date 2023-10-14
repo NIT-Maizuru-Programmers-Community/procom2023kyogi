@@ -3,6 +3,11 @@ import time
 import threading
 from matplotlib import pyplot as plt
 import randomplay
+import tkinter
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+import matplotlib.animation as animation
+import numpy as np
 
 
 # 対応する色を返す(グラフ描画用)
@@ -153,7 +158,93 @@ def ShowCells():
     global CurrentTurn
     global Response
 
-    while True:
+    fig = Figure()
+    plt = fig.add_subplot(111)
+    lines = []
+    for _ in range(0, Size):
+        for _ in range(0, Size):
+            line = plt.plot([], [], lw=2, label="line")
+            lines.append(line)
+
+    def _quit():
+        root.quit()
+        root.destroy()
+
+    def init():
+        for line in lines:
+            line.set_data([], [])
+        return tuple(lines)
+
+    def animate(i):
+        # plt.cla()
+        Board = Response["board"]
+        for x in range(0, Size):
+            for y in range(0, Size):
+                plt.plot(
+                    x,
+                    Size - 1 - y,
+                    marker="s",
+                    markersize=20,
+                    c=GetStructureColor(Board["structures"][y][x]),
+                )
+                if CurrentTurn > 2:
+                    if GetTerritoryColor(Board["territories"][y][x]) != "clear":
+                        plt.plot(
+                            x,
+                            Size - 1 - y,
+                            marker="s",
+                            markersize=10,
+                            c=GetTerritoryColor(Board["territories"][y][x]),
+                        )
+                    if GetWallColor(Board["walls"][y][x]) != "clear":
+                        plt.plot(
+                            x,
+                            Size - 1 - y,
+                            marker="s",
+                            markersize=10,
+                            c=GetWallColor(Board["walls"][y][x]),
+                        )
+                if GetMasonColor(Board["masons"][x][y]) != "clear":
+                    plt.plot(
+                        x,
+                        Size - 1 - y,
+                        marker="s",
+                        markersize=5,
+                        c=GetMasonColor(Board["masons"][y][x]),
+                    )
+        plt.axis("square")
+
+        # line.set_ydata(np.sin(x + i))  # update the data.
+        # return (line,)
+
+    root = tkinter.Tk()
+    root.wm_title("Embedding in Tk anim")
+
+    # FuncAnimationより前に呼ぶ必要がある
+    canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+
+    # x = np.arange(0, 3, 0.01)  # x軸(固定の値)
+    l = np.arange(0, 8, 0.01)  # 表示期間(FuncAnimationで指定する関数の引数になる)
+
+    # plt.set_ylim([-1.1, 1.1])
+    # (line,) = plt.plot(x, np.sin(x))
+
+    ani = animation.FuncAnimation(
+        fig,
+        animate,
+        l,
+        # init_func=init,
+        interval=10,
+        # blit=True,
+    )
+
+    toolbar = NavigationToolbar2Tk(canvas, root)
+    canvas.get_tk_widget().pack()
+    button = tkinter.Button(master=root, text="Quit", command=_quit)
+    button.pack()
+    tkinter.mainloop()
+
+    """while True:
         Board = Response["board"]
         for x in range(0, Size):
             for y in range(0, Size):
@@ -191,10 +282,18 @@ def ShowCells():
                     )
         plt.axis("square")
         plt.pause(0.1)
-        plt.cla()
+        plt.cla()"""
 
 
 Thread1 = threading.Thread(target=Process)
-Thread2 = threading.Thread(target=ShowCells)
 Thread1.start()
-Thread2.start()
+# ShowCells()
+while True:
+    board = Response["board"]
+    print("--------------------------------------------")
+    for x in range(0, Size):
+        for y in range(0, Size):
+            print(str(Board["masons"][x][y]) + " ", end="")
+        print("\n")
+    print("--------------------------------------------")
+    time.sleep(6)
