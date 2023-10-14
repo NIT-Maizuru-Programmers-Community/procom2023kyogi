@@ -186,7 +186,7 @@ def ShowCells():
         plt.pause(0.1)
 
 
-# Thread1 = threading.Thread(target=Process)
+Thread1 = threading.Thread(target=Process)
 Thread2 = threading.Thread(target=ShowCells)
-# Thread1.start()
+Thread1.start()
 Thread2.start()
