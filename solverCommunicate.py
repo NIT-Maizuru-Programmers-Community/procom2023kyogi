@@ -319,14 +319,10 @@ for y in range(0, Size):
 
 myMa=[]
 myMacoor=[]
-tekiMa=[]
-tekiMacoor=[]
 for i in range(Size):
     for j in range(Size):
         if Cells[i][j].mason.team == Team.A:
             myMacoor.append([i,j])
-        elif Cells[i][j].mason.team == Team.B:
-            tekiMacoor.append([i,j])
 
 #最初だけ実行
 CurrentTurn = 0

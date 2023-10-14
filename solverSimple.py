@@ -95,6 +95,19 @@ for y in range(0, Size):
 
 # 初期処理
 CurrentTurn = 1
+myMason=[[0,0]]*TeamMasonCount
+for i in range(Size):
+    for j in range(Size):
+        if Cells[i][j].mason > 0:
+            myMason[Cells[i][j].mason-1][0] = i
+            myMason[Cells[i][j].mason-1][1] = j
+
+for t in range(TeamMasonCount):
+    myMason[t] = 0, 0
+
+action = [[0, 0]]*TeamMasonCount
+for t in range(TeamMasonCount):
+    action[t] = randomplay.randomplay(Cells,myMason[t][0],myMason[t][1],Size)
 
 # ループ処理
 while True:
