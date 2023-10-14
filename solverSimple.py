@@ -63,16 +63,6 @@ class Cell:
         self.wall = board["walls"][self.x][self.y]
         self.territory = board["territories"][self.x][self.y]
 
-    def Action(self):
-        if self.mason > 0:
-            type, dir = randomplay.randomplay(Cells, self.x, self.y, Size)
-            Actions.append(
-                {
-                    "type": type,
-                    "dir": dir,
-                }
-            )
-
 
 # 定義類
 Url = "http://localhost:3000/matches"  # http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
@@ -105,14 +95,21 @@ for y in range(0, Size):
     print("\n")"""
 
 # 初期処理
+Masons = [(0, 0)] * TeamMasonCount
+for x in range(0, Size):
+    for y in range(0, Size):
+        if Cells[x][y].mason > 0:
+            Masons[Cells[x][y].mason - 1] = (x, y)
+
 CurrentTurn = 1
 Actions = []
 
 
-# ループ処理
+# 毎ターン処理
 def Process():
     global CurrentTurn
     global Response
+
     while True:
         if CurrentTurn > 2:
             while Response["turn"] <= CurrentTurn:
@@ -127,9 +124,14 @@ def Process():
         CurrentTurn += 1
 
         Actions.clear()
-        for x in range(0, Size):
-            for y in range(0, Size):
-                Cells[x][y].Action()
+        for masonX, masonY in Masons:
+            type, dir = randomplay.randomplay(Cells, masonX, masonY, Size)
+            Actions.append(
+                {
+                    "type": type,
+                    "dir": dir,
+                }
+            )
         json_data = {
             "turn": CurrentTurn,
             "actions": Actions,
@@ -143,6 +145,7 @@ def Process():
         CurrentTurn += 1
 
 
+# グラフ描画処理
 def ShowCells():
     while True:
         for x in range(0, Size):
