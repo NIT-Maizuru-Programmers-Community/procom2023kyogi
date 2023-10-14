@@ -43,12 +43,16 @@ def TypeJudge(p):
         return 2
     if 12 < p < 16:
         return 3
+    
+def OnCastle(field):
+    return (field.structure == 2)
 
 def randomplay(field,x,y,size):
     move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     p = []
     a = 0
-    dx,dy = 0
+    type = 0
+    dir = 0
     for i in range(4,16):
         try:
             if IsOutOfSize(x+move[i][0],y+move[i][1],size):
@@ -68,5 +72,5 @@ def randomplay(field,x,y,size):
     print(p)
     a = random.choice(p)
     type = TypeJudge(a)
-    vec = vec2dir([x+move[i][0]],[y+move[i][1]])
-    return type , vec
+    dir = vec2dir([x+move[i][0]],[y+move[i][1]])
+    return type , dir
