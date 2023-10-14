@@ -84,3 +84,13 @@ def randomplay(field,x,y,size):
     elif 11 < a < 16:
         dir = vec2dir(move[a-12][0],move[a-12][1])
     return type, dir
+
+def superrandom():
+    type=[1,2]
+    dir=[1,2,3,4,5,6,7,8]
+    k=random.choice(type)
+    if k == 1:
+        u=random.choice(dir)
+    else:
+        u=random.choice(dir[0:4])
+    return k,u
