@@ -238,7 +238,7 @@ class Cell:
             return
         temp = self.mason.teamID
         for _ in range(temp-1):
-            p //= 16
+            p /= 16
         c = int(p % 16)
         self.mason.Act(c)
 
