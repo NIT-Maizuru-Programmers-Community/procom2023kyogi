@@ -31,7 +31,10 @@ def CanEnter(field):
     return ((field.structure != 1) and (field.wall != 2) and (field.mason == 0))
 
 def CanPlace(field):
-    return ((field.structure != 2) and (field.wall == 0) and (field.mason == 0))
+    if ((field.structure != 2) and (field.wall == 0) and (field.mason == 0)):
+        return True
+    else:
+        return False
 
 def CanBreak(field):
     return (field.wall == 2)
