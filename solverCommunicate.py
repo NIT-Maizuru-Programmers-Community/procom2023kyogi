@@ -361,7 +361,8 @@ while(1):
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size,temp[i])))
+        tempid = myMacoor[i][2]
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[tempid].x,myMa[tempid].y,Size,temp[i])))
     print(p,CurrentTurn,TeamMasonCount)
     c=0
     temp = p
