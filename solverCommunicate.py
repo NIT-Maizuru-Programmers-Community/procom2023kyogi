@@ -76,6 +76,8 @@ class Mason:
             self.Place(self.move[cond-8][0], self.move[cond-8][1])
         elif 11<cond<16:
             self.Break(self.move[cond-12][0], self.move[cond-12][1])
+        else:
+            self.Skip()
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
@@ -121,6 +123,7 @@ class Mason:
     
     #何もしない
     def Skip():
+        action.append({'type': 0,'dir': 0,})
         return
 
 class Cell:
@@ -292,7 +295,7 @@ TeamMasonCount = 0
 #with open('server/sample.conf.txt', encoding="utf-8") as f:
 #    load = json.load(f)
 # サーバーのURL
-url = 'http://localhost:3000/matches'
+url = 'http://localhost:3000/matches' #http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
 # クエリパラメータ
 params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
 # GETリクエストを送信
@@ -310,11 +313,10 @@ url += str(load["matches"][0]["id"])
 for x in range(0, Size):
     subCells = []
     for y in range(0, Size):
-        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
+        cell = Cell(x,y,l["structures"][y][x],l["masons"][y][x])
         subCells.append(cell)
     Cells.append(subCells)
 
-G=alphabeta.Game(Size, Size, TeamMasonCount,Cells)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -327,12 +329,14 @@ for i in range(Size):
             tekiMacoor.append([i,j])
 
 #最初だけ実行
-CurrentTurn = 1
+CurrentTurn = 0
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
+temp = [0]*TeamMasonCount
 
 #pyplotの画面を閉じる度に実行
 while(1):
+    CurrentTurn += 1
     action.clear()
     plt.cla
     for x in range(0, Size):
@@ -349,17 +353,18 @@ while(1):
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
-                myMacoor.append([i,j])
+                myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],i))
+        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],myMacoor[i][2]))
 
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
-    print(p,CurrentTurn)
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size,temp[i])))
+    print(p,CurrentTurn,TeamMasonCount)
     c=0
+    temp = p
     for i in range(TeamMasonCount):
         print(p[i])
         c += p[i]*pow(16,i)
@@ -375,8 +380,18 @@ while(1):
         responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     print(responsePost, json_data)
 
+    masonCountA = 0
+    masonCountB = 0
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                masonCountA += 1
+            elif Cells[i][j].mason.team == Team.B:
+                masonCountB += 1
+    print("masonCountA: ", masonCountA, "   masonCountB: ", masonCountB)
+
     #time.sleep(waitTime * 2 * 0.99)
-    CurrentTurn += 2
+    CurrentTurn += 1
     responseTurn = requests.get(url, params=params)
     while responseTurn.json()["turn"] < CurrentTurn - 1:
         with requests.get(url, params=params) as responseTurn:
@@ -388,4 +403,11 @@ while(1):
     #print(lTurn)
     for x in range(0, Size):
         for y in range(0, Size):
-            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+            Cells[x][y].Set(lTurn["masons"][y][x],lTurn["walls"][y][x],lTurn["territories"][y][x])
+    
+    for i in range(Size):
+        for j in range(Size):
+            if Cells[i][j].mason.team == Team.A:
+                myMacoor.append([i,j])
+            elif Cells[i][j].mason.team == Team.B:
+                tekiMacoor.append([i,j])
