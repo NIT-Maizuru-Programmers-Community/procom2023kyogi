@@ -5,27 +5,37 @@ import time
 import numpy as np
 
 #対応する色を返す(グラフ描画用)
-def GetStructureColor(id):
+def GetStructureColor(id):#構造物
     if id == 1:
         return "lightgreen"
     elif id == 2:
         return "gray"
     else:
         return "white"
-def GetWallColor(id):
+def GetWallColor(id):#城壁
     if id == 1:
         return "pink"
     elif id == 2:
         return "lightblue"
     else:
         return "clear"
-def GetMasonColor(id):
+def GetMasonColor(id):#職人
     if id > 0:
         return "red"
     elif id < 0:
         return "blue"
     else:
         return "clear"
+def GetterritoryColor(id):
+    if id == 0:
+        return "snow"
+    elif id == 1:
+        return "brown"
+    elif id == 2:
+        return "navy"
+    else:
+        return "gold"
+    
 
 headers = {'Content-Type': 'application/json',}
 
@@ -52,11 +62,13 @@ def _update(frame, x, y):
     for x in range(0, Size):
         for y in range(0, Size):
             plt.plot(x, y, marker='s', markersize=20, c=GetStructureColor(l["structures"][x][y]))
+            if GetterritoryColor(l["territories"][x][y]) != "clear":
+                plt.plot(x, y, marker='s', markersize=10, c=GetterritoryColor(l["territories"][x][y]))
             if GetWallColor(l["walls"][x][y]) != "clear":
-                plt.plot(x, y, marker='s', markersize=15, c=GetWallColor(l["walls"][x][y]))
+                plt.plot(x, y, marker='s', markersize=10, c=GetWallColor(l["walls"][x][y]))
             if GetMasonColor(l["masons"][x][y]) != "clear":
-                plt.plot(x, y, marker='s', markersize=10, c=GetMasonColor(l["masons"][x][y]))
-    plt.axis('square')
+                plt.plot(x, y, marker='s', markersize=5, c=GetMasonColor(l["masons"][x][y]))
+            plt.axis('square')
 
     CurrentTurn += 1
     responseTurn = requests.get(url, params=params)
