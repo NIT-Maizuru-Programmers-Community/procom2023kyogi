@@ -76,6 +76,8 @@ class Mason:
             self.Place(self.move[cond-8][0], self.move[cond-8][1])
         elif 11<cond<16:
             self.Break(self.move[cond-12][0], self.move[cond-12][1])
+        else:
+            self.Skip()
 
     #相対座標x,yに城壁設置
     def Place(self,x,y):
