@@ -3,7 +3,7 @@ def randomplay(field,x,y,size):
     p = []
     for i in range(4,8):
         try:
-            if (x+move[i][0] >= size) or (y+move[i][1] >= size) or (x+move[i][0] < 0) or (y+move[i][1] < 0):
+            if ((x+move[i][0]) >= size) or ((y+move[i][1]) >= size) or ((x+move[i][0]) < 0) or ((y+move[i][1]) < 0):
                 continue
             if field[x+move[i][0]][y+move[i][1]].CanEnter(1):
                 p.append(i)

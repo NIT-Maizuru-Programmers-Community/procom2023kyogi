@@ -292,7 +292,7 @@ TeamMasonCount = 0
 #with open('server/sample.conf.txt', encoding="utf-8") as f:
 #    load = json.load(f)
 # サーバーのURL
-url = 'http://localhost:3000/matches' #http://172.28.0.1:8080/matches ←本番用
+url = 'http://172.28.0.1:8080/matches' #http://172.28.0.1:8080/matches ←本番用
 # クエリパラメータ
 params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
 # GETリクエストを送信
