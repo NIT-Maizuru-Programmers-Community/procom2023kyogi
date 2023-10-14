@@ -234,7 +234,7 @@ CurrentTurn = 0
 TeamMasonCount = 0
 with open('server\sample.conf.txt', encoding="utf-8") as f:
     load = json.load(f)
-    l = load["match"]["board"]
+    l = load["matches"]["board"]
     Size = len(l["structures"])
     TeamMasonCount = l["mason"]
     for x in range(0, Size):
@@ -243,9 +243,7 @@ with open('server\sample.conf.txt', encoding="utf-8") as f:
             cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
             subCells.append(cell)
         Cells.append(subCells)
-
-field = copy.deepcopy(Cells)
-G=alphabeta.Game(Size, Size, TeamMasonCount,field,Team)
+G=alphabeta.Game(Size,Size,TeamMasonCount,Cells)
 myMa=[]
 myMacoor=[]
 tekiMa=[]
@@ -286,7 +284,7 @@ while(1):
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
     #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y)))
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size)))
     print(p,CurrentTurn)
     c=0
     for i in range(TeamMasonCount):
