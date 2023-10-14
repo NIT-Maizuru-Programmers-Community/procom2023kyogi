@@ -42,9 +42,9 @@ def CanBreak(field):
 def TypeJudge(p):
     if 3 < p < 8:
         return 1
-    if 8 < p < 12:
+    if 7 < p < 12:
         return 2
-    if 12 < p < 16:
+    if 11 < p < 16:
         return 3
     
 def OnCastle(field):
@@ -58,22 +58,26 @@ def randomplay(field,x,y,size):
     dir = 0
     for i in range(4,16):
         try:
-            if IsOutOfSize(x+move[i][0],y+move[i][1],size):
-                continue
             if 3 < i < 8:
-                if (CanEnter(field[x+move[i][0]][y+move[i][1]])):
+                if (CanEnter(field[x+move[i][0]][y+move[i][1]])):# and IsOutOfSize(x+move[i][0],y+move[i][1],size):
                     p.append(i)
             if 7 < i < 12:
-                if (CanPlace(field[x+move[i-8][0]][y+move[i-8][1]])):
+                if (CanPlace(field[x+move[i-8][0]][y+move[i-8][1]])):# and IsOutOfSize(x+move[i-8][0],y+move[i-8][1],size):
                     for _ in range(3):
                         p.append(i)
             if 11 < i < 16:
-                if (CanBreak(field[x+move[i-12][0]][y+move[i-12][1]])):
+                if (CanBreak(field[x+move[i-12][0]][y+move[i-12][1]])):# and IsOutOfSize(x+move[i-12][0],y+move[i-12][1],size):
                     return [i]
         except:
             continue
     print(p)
     a = random.choice(p)
+    print(a)
     type = TypeJudge(a)
-    dir = vec2dir([move[a][0]],[move[a][1]])
-    return type , dir
+    if 3 < i < 8:
+        dir = vec2dir(move[a][0],move[a][1])
+    elif 7 < a < 12:
+        dir = vec2dir(move[a-8][0],move[a-8][1])
+    elif 11 < a < 16:
+        dir = vec2dir(move[a-12][0],move[a-12][1])
+    return type, dir
