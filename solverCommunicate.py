@@ -350,12 +350,13 @@ while(1):
     plt.show()
     myMa=[]
     myMacoor=[]
+    idcount=0
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
                 myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1,myMacoor[i][0],myMacoor[i][1],myMacoor[i][2]))
+        myMa.append(Mason(1,myMacoor[myMacoor[i][2]-1][0],myMacoor[myMacoor[i][2]-1][1],myMacoor[myMacoor[i][2]-1][2]))
 
     p=[]
     #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)

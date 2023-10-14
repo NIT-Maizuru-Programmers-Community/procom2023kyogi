@@ -1,3 +1,5 @@
+import random
+
 def IsOutOfSize(x, y, Size):
     if (x < 0)|(Size <= x):
         return True
@@ -5,48 +7,66 @@ def IsOutOfSize(x, y, Size):
         return True
     return False
 
-def randomplay(field,x,y,size,temp):
+def vec2dir(x,y):
+    if (x,y) == (-1,1):
+        return 1
+    if (x,y) == (0,1):
+        return 2
+    if (x,y) == (1,1):
+        return 3
+    if (x,y) == (1,0):
+        return 4
+    if (x,y) == (1,-1):
+        return 5
+    if (x,y) == (0,-1):
+        return 6
+    if (x,y) == (-1,-1):
+        return 7
+    if (x,y) == (-1,0):
+        return 8
+    else:
+        return 0
+
+def CanEnter(field):
+    return ((field.structure != 1) and (field.wall != 2) and (field.mason == 0))
+
+def CanPlace(field):
+    return ((field.structure != 2) and (field.wall == 0) and (field.mason == 0) and (field.territory != 1))
+
+def CanBreak(field):
+    return (field.wall == 2)
+
+def TypeJudge(p):
+    if 3 < p < 8:
+        return 1
+    if 8 < p < 12:
+        return 2
+    if 12 < p < 16:
+        return 3
+
+def randomplay(field,x,y,size):
     move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
     p = []
-    for i in range(4,8):
+    a = 0
+    dx,dy = 0
+    for i in range(4,16):
         try:
             if IsOutOfSize(x+move[i][0],y+move[i][1],size):
                 continue
-            if field[x+move[i][0]][y+move[i][1]].CanEnter(1):
-                for _ in range(2):
+            if 3 < i < 8:
+                if (CanEnter(field[x+move[i][0]][y+move[i][1]])):
                     p.append(i)
-            #if (temp == 8) or (temp == 9) or (temp == 10) or (temp == 11):
-                #for t in range(4,8):
-                    #try:
-                        #if IsOutOfSize(x+move[i][0],y+move[i][1],size):
-                            #continue
-                        #if field[x+move[i][0]][y+move[i][1]].CanEnter(1):
-                         #   p.append(i)
-                    #except:
-                     #   continue
-                #return p
-        except:
-            continue
-    for j in range(8,12):
-        try:
-            if IsOutOfSize(x+move[j-8][0],y+move[j-8][1],size):
-                continue
-            if field[x+move[j-8][0]][y+move[j-8][1]].isTerritoryA == True:
-                continue
-            if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == False):
-                continue
-            if (field[x+move[j-8][0]][y+move[j-8][1]].CanPlace(1) == True):
-                for _ in range(4):
-                    p.append(j)
-        except:
-            continue
-    for k in range(12,16):
-        if IsOutOfSize(x+move[k-12][0],y+move[k-12][1],size):
-            continue
-        try:
-            if (field[x+move[k-12][0]][y+move[k-12][1]].CanBreak(1)):
-                return [k] 
+            if 8 < i < 12:
+                if (CanPlace(field[x+move[i][0]][y+move[i][1]])):
+                    for _ in range(3):
+                        p.append(i)
+            if 12 < i < 16:
+                if (CanBreak(field[x+move[i][0]][y+move[i][1]])):
+                    return [i]
         except:
             continue
     print(p)
-    return p
+    a = random.choice(p)
+    type = TypeJudge(a)
+    vec = vec2dir([x+move[i][0]],[y+move[i][1]])
+    return type , vec

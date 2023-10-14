@@ -2,6 +2,7 @@ import requests
 import time
 import threading
 from matplotlib import pyplot as plt
+import randomplay
 
 
 # 対応する色を返す(グラフ描画用)
