@@ -11,151 +11,124 @@ import randomplay
 import requests
 import time
 
-
-def vec2dir(x, y):
-    if (x, y) == (-1, 1):
+def vec2dir(x,y):
+    if (x,y) == (-1,1):
         return 1
-    if (x, y) == (0, 1):
+    if (x,y) == (0,1):
         return 2
-    if (x, y) == (1, 1):
+    if (x,y) == (1,1):
         return 3
-    if (x, y) == (1, 0):
+    if (x,y) == (1,0):
         return 4
-    if (x, y) == (1, -1):
+    if (x,y) == (1,-1):
         return 5
-    if (x, y) == (0, -1):
+    if (x,y) == (0,-1):
         return 6
-    if (x, y) == (-1, -1):
+    if (x,y) == (-1,-1):
         return 7
-    if (x, y) == (-1, 0):
+    if (x,y) == (-1,0):
         return 8
     else:
         return 0
 
-
-# -1,0,1の範囲に正規化
+#-1,0,1の範囲に正規化
 def Normalize(n):
     return max(-1, min(n, 1))
 
-
-# マップ範囲外ならTrue
+#マップ範囲外ならTrue
 def IsOutOfSize(x, y):
-    if (x < 0) | (Size <= x):
+    if (x < 0)|(Size <= x):
         return True
-    if (y < 0) | (Size <= y):
+    if (y < 0)|(Size <= y):
         return True
     return False
 
-
 class Team(Enum):
-    NONE = 0
-    A = 1
-    B = 2
-
+    NONE=0
+    A=1
+    B=2
 
 class Structure(Enum):
-    PLANE = 0
-    POOL = 1
-    CASTLE = 2
-
+    PLANE=0
+    POOL=1
+    CASTLE=2
 
 class Mason:
-    x = 0
-    y = 0
+    x=0
+    y=0
     team = Team(0)
     teamID = 0
-    move = []
+    move=[]
 
-    # 初期化
-    def __init__(self, team, x, y, teamID):
+    #初期化
+    def __init__(self, team, x ,y, teamID):
         self.x = x
         self.y = y
         self.team = team
         self.teamID = teamID
-        self.move = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-
-    # 毎ターンの行動
-    def Act(self, cond):
-        if -1 < cond < 8:
+        self.move=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]
+    
+    #毎ターンの行動
+    def Act(self,cond):
+        if -1<cond<8:
             self.Move(self.move[cond][0], self.move[cond][1])
-        elif 7 < cond < 12:
-            self.Place(self.move[cond - 8][0], self.move[cond - 8][1])
-        elif 11 < cond < 16:
-            self.Break(self.move[cond - 12][0], self.move[cond - 12][1])
+        elif 7<cond<12:
+            self.Place(self.move[cond-8][0], self.move[cond-8][1])
+        elif 11<cond<16:
+            self.Break(self.move[cond-12][0], self.move[cond-12][1])
         else:
             self.Skip()
 
-    # 相対座標x,yに城壁設置
-    def Place(self, x, y):
-        if (x != 0) & (y != 0):
+    #相対座標x,yに城壁設置
+    def Place(self,x,y):
+        if (x != 0)&(y != 0):
             return False
         x = Normalize(x)
         y = Normalize(y)
-        rX = self.x + x
-        rY = self.y + y
+        rX = self.x+x
+        rY = self.y+y
         if IsOutOfSize(rX, rY):
             return
         if not Cells[rX][rY].CanPlace(self.team):
             return
         Cells[rX][rY].Place(self.team)
-        action.append(
-            {
-                "type": 2,
-                "dir": vec2dir(x, y),
-            }
-        )
-
-    # 相対座標x,yの城壁破壊
-    def Break(self, x, y):
-        if (x != 0) & (y != 0):
+        action.append({'type': 2,'dir': vec2dir(x,y),})
+    
+    #相対座標x,yの城壁破壊
+    def Break(self,x,y):
+        if (x != 0)&(y != 0):
             return False
         x = Normalize(x)
         y = Normalize(y)
-        rX = self.x + x
-        rY = self.y + y
+        rX = self.x+x
+        rY = self.y+y
         if IsOutOfSize(rX, rY):
             return
         Cells[rX][rY].Break()
-        action.append(
-            {
-                "type": 3,
-                "dir": vec2dir(x, y),
-            }
-        )
-
-    # 相対座標x,yに移動
-    def Move(self, x, y):
+        action.append({'type': 3,'dir': vec2dir(x,y),})
+    
+    #相対座標x,yに移動
+    def Move(self,x,y):
         x = Normalize(x)
         y = Normalize(y)
-        rX = self.x + x
-        rY = self.y + y
+        rX = self.x+x
+        rY = self.y+y
         if IsOutOfSize(rX, rY):
             return
         if not Cells[rX][rY].CanEnter(self.team):
             return
         Cells[rX][rY].Enter(self.team, self.teamID)
         Cells[self.x][self.y].Exit()
-        action.append(
-            {
-                "type": 1,
-                "dir": vec2dir(x, y),
-            }
-        )
-
-    # 何もしない
+        action.append({'type': 1,'dir': vec2dir(x,y),})
+    
+    #何もしない
     def Skip():
-        action.append(
-            {
-                "type": 0,
-                "dir": 0,
-            }
-        )
+        action.append({'type': 0,'dir': 0,})
         return
 
-
 class Cell:
-    x = 0
-    y = 0
+    x=0
+    y=0
     structure = Structure(0)
     wall = Team(0)
     mason = Mason(Team.NONE, 0, 0, 0)
@@ -164,7 +137,7 @@ class Cell:
     __nextMason = Team(0)
     __nextMasonID = 0
 
-    # 初期化。ここ以外でIDは用いない
+    #初期化。ここ以外でIDは用いない
     def __init__(self, x, y, structures, masons):
         self.x = x
         self.y = y
@@ -173,13 +146,13 @@ class Cell:
         elif structures == 2:
             self.structure = Structure(2)
         if masons > 0:
-            self.mason = Mason(Team.A, x, y, masons)
+            self.mason = Mason(Team.A, x ,y, masons)
         elif masons < 0:
             self.mason = Mason(Team.B, x, y, masons)
 
     def Set(self, masons, walls, territories):
         if masons > 0:
-            self.mason = Mason(Team.A, x, y, masons)
+            self.mason = Mason(Team.A, x ,y, masons)
         elif masons < 0:
             self.mason = Mason(Team.B, x, y, masons)
         else:
@@ -203,39 +176,39 @@ class Cell:
             self.isTerritoryA = False
             self.isTerritoryB = False
 
-    # 上に乗ることが出来るか
+    #上に乗ることが出来るか
     def CanEnter(self, team):
         if self.structure == Structure.POOL:
             return False
-        if (team == Team.A) & (self.wall == Team.B):
+        if (team == Team.A)&(self.wall == Team.B):
             return False
-        if (team == Team.B) & (self.wall == Team.A):
+        if (team == Team.B)&(self.wall == Team.A):
             return False
         if self.mason.team != Team.NONE:
             return False
         return True
-
-    # 上に城壁を設置出来るか
+    
+    #上に城壁を設置出来るか
     def CanPlace(self, team):
         if self.structure == Structure.CASTLE:
             return False
         if self.wall != Team.NONE:
             return False
-        if (team == Team.A) & (self.mason.team == Team.B):
+        if (team == Team.A)&(self.mason.team == Team.B):
             return False
-        if (team == Team.B) & (self.mason.team == Team.A):
+        if (team == Team.B)&(self.mason.team == Team.A):
             return False
         return True
-
-    # 破壊できるか
+    
+    #破壊できるか
     def CanBreak(self, team):
-        if (team == Team.A) & (self.wall == Team.B):
+        if (team == Team.A)&(self.wall == Team.B):
             return True
-        if (team == Team.B) & (self.wall == Team.A):
+        if (team == Team.B)&(self.wall == Team.A):
             return True
         return False
 
-    # 対応する色を返す(グラフ描画用)
+    #対応する色を返す(グラフ描画用)
     def GetStructureColor(self):
         if self.structure == Structure.POOL:
             return "lightgreen"
@@ -243,7 +216,6 @@ class Cell:
             return "gray"
         else:
             return "white"
-
     def GetWallColor(self):
         if self.wall == Team.A:
             return "pink"
@@ -251,7 +223,6 @@ class Cell:
             return "lightblue"
         else:
             return "clear"
-
     def GetMasonColor(self):
         if self.mason.team == Team.A:
             return "red"
@@ -259,20 +230,20 @@ class Cell:
             return "blue"
         else:
             return "clear"
-
-    # 毎ターン実行される
+    
+    #毎ターン実行される
     def Act(self, p):
         if self.mason.team == Team.NONE:
             return
         if self.mason.team == Team.B:
             return
         temp = self.mason.teamID
-        for _ in range(temp - 1):
+        for _ in range(temp-1):
             p /= 16
         c = int(p % 16)
         self.mason.Act(c)
 
-    # Actのfor文が一旦終わった後実行される
+    #Actのfor文が一旦終わった後実行される
     def LateAct(self):
         if self.__nextMason == Team.NONE:
             return
@@ -280,23 +251,22 @@ class Cell:
         self.__nextMason = Team(0)
         self.__nextMasonID = 0
 
-    # 自身に城壁設置
+    #自身に城壁設置
     def Place(self, team):
         self.wall = team
 
-    # 自身の城壁破壊
+    #自身の城壁破壊
     def Break(self):
         self.wall = Team.NONE
 
-    # 職人が入ってくる
+    #職人が入ってくる
     def Enter(self, team, masonID):
         self.__nextMason = team
         self.__nextMasonID = masonID
 
-    # 職人が出ていく
+    #職人が出ていく
     def Exit(self):
         self.mason = Mason(Team.NONE, 0, 0, 0)
-
 
 def CopyCells():
     copied = []
@@ -304,8 +274,8 @@ def CopyCells():
         subCopied = []
         for y in range(0, Size):
             cellCopied = Cell
-            cellCopied.x = x
-            cellCopied.y = y
+            cellCopied.x=x
+            cellCopied.y=y
             cellCopied.structure = Cells[x][y].structure
             cellCopied.wall = Cells[x][y].wall
             cellCopied.mason = Mason(Cells[x][y].mason.team, x, y, Cells[x][y].mason.teamID)
@@ -313,24 +283,21 @@ def CopyCells():
         copied.append(subCopied)
     return copied
 
-
-headers = {
-    "Content-Type": "application/json",
-}
+headers = {'Content-Type': 'application/json',}
 action = []
 
 # サーバーからの応答を表示
-# print("レスポンス内容:", response.json())
-# jsonからマップ読み込み
+#print("レスポンス内容:", response.json())
+#jsonからマップ読み込み
 Cells = []
 Size = 0
 TeamMasonCount = 0
-# with open('server/sample.conf.txt', encoding="utf-8") as f:
+#with open('server/sample.conf.txt', encoding="utf-8") as f:
 #    load = json.load(f)
 # サーバーのURL
-url = "http://localhost:3000/matches"  # http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
+url = 'http://localhost:3000/matches' #http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
 # クエリパラメータ
-params = {"token": "maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690"}
+params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
 # GETリクエストを送信
 response = requests.get(url, params=params)
 print(response)
@@ -346,72 +313,65 @@ url += str(load["matches"][0]["id"])
 for y in range(0, Size):
     subCells = []
     for x in range(0, Size):
-        cell = Cell(x, y, l["structures"][x][y], l["masons"][x][y])
+        cell = Cell(x,y,l["structures"][x][y],l["masons"][x][y])
         subCells.append(cell)
     Cells.append(subCells)
 
-myMa = []
-myMacoor = []
-tekiMa = []
-tekiMacoor = []
+myMa=[]
+myMacoor=[]
 for i in range(Size):
     for j in range(Size):
         if Cells[i][j].mason.team == Team.A:
-            myMacoor.append([i, j])
-        elif Cells[i][j].mason.team == Team.B:
-            tekiMacoor.append([i, j])
+            myMacoor.append([i,j])
 
-# 最初だけ実行
+#最初だけ実行
 CurrentTurn = 0
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
-temp = [0] * TeamMasonCount
+temp = [0]*TeamMasonCount
 
-# pyplotの画面を閉じる度に実行
-while 1:
+#pyplotの画面を閉じる度に実行
+while(1):
     CurrentTurn += 1
     action.clear()
     plt.cla
     for x in range(0, Size):
         for y in range(0, Size):
-            plt.plot(x, y, marker="s", markersize=20, c=Cells[x][y].GetStructureColor())
+            plt.plot(x, y, marker='s', markersize=20, c=Cells[x][y].GetStructureColor())
             if Cells[x][y].GetWallColor() != "clear":
-                plt.plot(x, y, marker="s", markersize=15, c=Cells[x][y].GetWallColor())
+                plt.plot(x, y, marker='s', markersize=15, c=Cells[x][y].GetWallColor())
             if Cells[x][y].GetMasonColor() != "clear":
-                plt.plot(x, y, marker="s", markersize=10, c=Cells[x][y].GetMasonColor())
-    plt.axis("square")
+                plt.plot(x, y, marker='s', markersize=10, c=Cells[x][y].GetMasonColor())
+    plt.axis('square')
     plt.show()
-    myMa = []
-    myMacoor = []
-    idcount = 0
+    myMa=[]
+    myMacoor=[]
+    idcount=0
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
-                myMacoor.append([i, j, Cells[i][j].mason.teamID])
+                myMacoor.append([i,j,Cells[i][j].mason.teamID])
     for i in range(TeamMasonCount):
-        myMa.append(Mason(1, myMacoor[myMacoor[i][2] - 1][0], myMacoor[myMacoor[i][2] - 1][1], myMacoor[myMacoor[i][2] - 1][2]))
+        myMa.append(Mason(1,myMacoor[myMacoor[i][2]-1][0],myMacoor[myMacoor[i][2]-1][1],myMacoor[myMacoor[i][2]-1][2]))
 
-    p = []
-    # p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
-    # print(p)
+    p=[]
+    #p = alphabeta.evaluator(G,CurrentTurn,TeamMasonCount,myMa,tekiMa)
+    #print(p)
     for i in range(TeamMasonCount):
-        p.append(random.choice(randomplay.randomplay(Cells, myMa[i].x, myMa[i].y, Size, temp[i])))
-    print(p, CurrentTurn, TeamMasonCount)
-    c = 0
+        p.append(random.choice(randomplay.randomplay(Cells,myMa[i].x,myMa[i].y,Size,temp[i])))
+    print(p,CurrentTurn,TeamMasonCount)
+    c=0
     temp = p
     for i in range(TeamMasonCount):
         print(p[i])
-        c += p[i] * pow(16, i)
+        c += p[i]*pow(16,i)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].Act(c)
     for x in range(0, Size):
         for y in range(0, Size):
             Cells[x][y].LateAct()
-    json_data = {
-        "turn": CurrentTurn,
-        "actions": action,
-    }
+    json_data = {'turn': CurrentTurn,'actions': action,}
     responsePost = requests.post(url, params=params, headers=headers, json=json_data)
     while responsePost.text == "TooEarly":
         responsePost = requests.post(url, params=params, headers=headers, json=json_data)
@@ -438,13 +398,10 @@ while 1:
     lTurn = loadTurn["board"]
     for y in range(0, Size):
         for x in range(0, Size):
-            Cells[x][y].Set(lTurn["masons"][x][y], lTurn["walls"][x][y], lTurn["territories"][x][y])
-
+            Cells[x][y].Set(lTurn["masons"][x][y],lTurn["walls"][x][y],lTurn["territories"][x][y])
+    
     myMacoor.clear()
-    tekiMacoor.clear()
     for i in range(Size):
         for j in range(Size):
             if Cells[i][j].mason.team == Team.A:
-                myMacoor.append([i, j])
-            elif Cells[i][j].mason.team == Team.B:
-                tekiMacoor.append([i, j])
+                myMacoor.append([i,j])

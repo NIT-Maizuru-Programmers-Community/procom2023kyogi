@@ -72,5 +72,5 @@ def randomplay(field,x,y,size):
     print(p)
     a = random.choice(p)
     type = TypeJudge(a)
-    dir = vec2dir([x+move[i][0]],[y+move[i][1]])
+    dir = vec2dir([move[a][0]],[move[a][1]])
     return type , dir
