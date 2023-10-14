@@ -293,7 +293,7 @@ TeamMasonCount = 0
 #with open('server/sample.conf.txt', encoding="utf-8") as f:
 #    load = json.load(f)
 # サーバーのURL
-url = 'http://172.28.0.1:8080/matches' #http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
+url = 'http://localhost:3000/matches' #http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
 # クエリパラメータ
 params = {'token': 'maizuru98a2309fded8fd535faf506029733e9e3d030aae3c46c7c5ee8193690'}
 # GETリクエストを送信
@@ -327,12 +327,13 @@ for i in range(Size):
             tekiMacoor.append([i,j])
 
 #最初だけ実行
-CurrentTurn = 1
+CurrentTurn = 0
 if not load["matches"][0]["first"]:
     CurrentTurn += 1
 
 #pyplotの画面を閉じる度に実行
 while(1):
+    CurrentTurn += 1
     action.clear()
     plt.cla
     for x in range(0, Size):
@@ -386,7 +387,7 @@ while(1):
     print("masonCountA: ", masonCountA, "   masonCountB: ", masonCountB)
 
     #time.sleep(waitTime * 2 * 0.99)
-    CurrentTurn += 2
+    CurrentTurn += 1
     responseTurn = requests.get(url, params=params)
     while responseTurn.json()["turn"] < CurrentTurn - 1:
         with requests.get(url, params=params) as responseTurn:
