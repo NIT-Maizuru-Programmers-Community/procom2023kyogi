@@ -59,15 +59,18 @@ def randomplay(field,x,y,size):
     for i in range(4,16):
         try:
             if 3 < i < 8:
-                if (CanEnter(field[x+move[i][0]][y+move[i][1]])) and (IsOutOfSize(x+move[i][0],y+move[i][1],size)==False):
+                if (CanEnter(field[x+move[i][0]][y-move[i][1]])) and (IsOutOfSize(x+move[i][0],y-move[i][1],size)==False):
                     p.append(i)
             if 7 < i < 12:
-                print(field[x+move[i-8][0]][y+move[i-8][1]].wall,x+move[i-8][0],y+move[i-8][1])
-                if (CanPlace(field[x+move[i-8][0]][y+move[i-8][1]])) and (IsOutOfSize(x+move[i-8][0],y+move[i-8][1],size)==False):
+                print(field[x+move[i-8][0]][y+move[i-8][1]].wall,x+move[i-8][0],y-move[i-8][1])
+                if (CanPlace(field[x+move[i-8][0]][y-move[i-8][1]])) and (IsOutOfSize(x+move[i-8][0],y-move[i-8][1],size)==False):
+                    if OnCastle(field[x][y]):
+                        p = [i]
+                        break
                     for _ in range(3):
                         p.append(i)
             if 11 < i < 16:
-                if (CanBreak(field[x+move[i-12][0]][y+move[i-12][1]])) and (IsOutOfSize(x+move[i-12][0],y+move[i-12][1],size)==False):
+                if (CanBreak(field[x+move[i-12][0]][y-move[i-12][1]])) and (IsOutOfSize(x+move[i-12][0],y-move[i-12][1],size)==False):
                     return [i]
         except:
             continue
