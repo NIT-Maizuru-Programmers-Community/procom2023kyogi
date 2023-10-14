@@ -101,8 +101,10 @@ for x in range(0, Size):
         if Cells[x][y].mason > 0:
             Masons[Cells[x][y].mason - 1] = [x, y]
 
-CurrentTurn = 0
 Actions = []
+CurrentTurn = 0
+if not IsFirst:
+    CurrentTurn += 1
 
 
 # 毎ターン処理
@@ -185,7 +187,7 @@ def ShowCells():
                             markersize=10,
                             c=GetWallColor(Board["walls"][y][x]),
                         )
-                if GetMasonColor(Board["masons"][x][y]) != "clear":
+                if GetMasonColor(Board["masons"][y][x]) != "clear":
                     plt.plot(
                         x,
                         Size - 1 - y,
