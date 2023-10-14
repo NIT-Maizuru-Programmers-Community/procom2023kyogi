@@ -63,6 +63,16 @@ class Cell:
         self.wall = board["walls"][self.x][self.y]
         self.territory = board["territories"][self.x][self.y]
 
+    def Action(self):
+        if self.mason > 0:
+            type, dir = randomplay.randomplay(Cells, self.x, self.y, Size)
+            Actions.append(
+                {
+                    "type": type,
+                    "dir": dir,
+                }
+            )
+
 
 # 定義類
 Url = "http://localhost:3000/matches"  # http://172.28.0.1:8080/matches ←本番用 http://localhost:3000/matches ←練習用
@@ -77,6 +87,7 @@ IsFirst = Response["first"]
 Size = Board["width"]
 TeamMasonCount = Board["mason"]
 Url += "/" + str(MatchID)
+print(Response)
 
 # セル生成
 Cells = []
@@ -100,21 +111,25 @@ Actions = []
 
 # ループ処理
 def Process():
+    global CurrentTurn
+    global Response
     while True:
-        Actions.clear()
+        if CurrentTurn > 2:
+            while Response["turn"] <= CurrentTurn:
+                with requests.get(Url, params=Param).json() as Response:
+                    time.sleep(0.01)
+            Board = Response["board"]
+            for x in range(0, Size):
+                for y in range(0, Size):
+                    Cells[x][y].Set(Board)
+        print("Get: ", Response)
 
         CurrentTurn += 1
 
-        while Response["turn"] <= CurrentTurn:
-            with requests.get(Url, params=Param).json() as Response:
-                time.sleep(0.01)
-        Board = Response["board"]
+        Actions.clear()
         for x in range(0, Size):
             for y in range(0, Size):
-                Cells[x][y].Set(Board)
-
-        CurrentTurn += 1
-
+                Cells[x][y].Action()
         json_data = {
             "turn": CurrentTurn,
             "actions": Actions,
@@ -123,6 +138,9 @@ def Process():
         while responsePost.text == "TooEarly":
             with requests.post(Url, params=Param, headers=Header, json=json_data) as responsePost:
                 time.sleep(0.01)
+        print("Post: ", responsePost)
+
+        CurrentTurn += 1
 
 
 def ShowCells():
@@ -136,7 +154,7 @@ def ShowCells():
                     markersize=20,
                     c=GetStructureColor(Board["structures"][x][y]),
                 )
-                if CurrentTurn > 1:
+                if CurrentTurn > 2:
                     if GetTerritoryColor(Board["territories"][x][y]) != "clear":
                         plt.plot(
                             x,
