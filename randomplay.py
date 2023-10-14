@@ -60,12 +60,12 @@ def randomplay(field,x,y,size):
             if 3 < i < 8:
                 if (CanEnter(field[x+move[i][0]][y+move[i][1]])):
                     p.append(i)
-            if 8 < i < 12:
-                if (CanPlace(field[x+move[i][0]][y+move[i][1]])):
+            if 7 < i < 12:
+                if (CanPlace(field[x+move[i-8][0]][y+move[i-8][1]])):
                     for _ in range(3):
                         p.append(i)
-            if 12 < i < 16:
-                if (CanBreak(field[x+move[i][0]][y+move[i][1]])):
+            if 11 < i < 16:
+                if (CanBreak(field[x+move[i-12][0]][y+move[i-12][1]])):
                     return [i]
         except:
             continue
