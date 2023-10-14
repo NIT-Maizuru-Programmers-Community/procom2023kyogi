@@ -106,8 +106,10 @@ for x in range(0, Size):
         if Cells[x][y].mason > 0:
             Masons[Cells[x][y].mason - 1] = (x, y)
 
-CurrentTurn = 0
 Actions = []
+CurrentTurn = 0
+if not IsFirst:
+    CurrentTurn += 1
 
 
 # 毎ターン処理
@@ -126,6 +128,10 @@ def Process():
             for x in range(0, Size):
                 for y in range(0, Size):
                     Cells[x][y].Set(Board)
+            for x in range(0, Size):
+                for y in range(0, Size):
+                    if Cells[x][y].mason > 0:
+                        Masons[Cells[x][y].mason - 1] = (x, y)
             # print("Get: ", Response)
 
         CurrentTurn += 1
@@ -176,7 +182,7 @@ def ShowCells():
         return tuple(lines)
 
     def animate(i):
-        # plt.cla()
+        plt.cla()
         Board = Response["board"]
         for x in range(0, Size):
             for y in range(0, Size):
