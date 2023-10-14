@@ -77,7 +77,7 @@ IsFirst = Response["first"]
 Size = Board["width"]
 TeamMasonCount = Board["mason"]
 Url += "/" + str(MatchID)
-print(Response)
+print("PrimaryGet: ", Response)
 
 # セル生成
 Cells = []
@@ -101,7 +101,7 @@ for x in range(0, Size):
         if Cells[x][y].mason > 0:
             Masons[Cells[x][y].mason - 1] = (x, y)
 
-CurrentTurn = 1
+CurrentTurn = 0
 Actions = []
 
 
@@ -111,15 +111,17 @@ def Process():
     global Response
 
     while True:
-        if CurrentTurn > 2:
-            while Response["turn"] <= CurrentTurn:
-                with requests.get(Url, params=Param).json() as Response:
+        if CurrentTurn > 1:
+            ResponseGet = requests.get(Url, params=Param)
+            while ResponseGet.json()["turn"] <= CurrentTurn:
+                with requests.get(Url, params=Param) as ResponseGet:
                     time.sleep(0.01)
+            Response = ResponseGet.json()
             Board = Response["board"]
             for x in range(0, Size):
                 for y in range(0, Size):
                     Cells[x][y].Set(Board)
-        print("Get: ", Response)
+            # print("Get: ", Response)
 
         CurrentTurn += 1
 
@@ -136,6 +138,7 @@ def Process():
             "turn": CurrentTurn,
             "actions": Actions,
         }
+        print(json_data)
         responsePost = requests.post(Url, params=Param, headers=Header, json=json_data)
         while responsePost.text == "TooEarly":
             with requests.post(Url, params=Param, headers=Header, json=json_data) as responsePost:
@@ -148,6 +151,7 @@ def Process():
 # グラフ描画処理
 def ShowCells():
     while True:
+        Board = Response["board"]
         for x in range(0, Size):
             for y in range(0, Size):
                 plt.plot(
